@@ -1,0 +1,588 @@
+/* Site Educacional Backend - Estilos Principais */
+
+/* Importar Tailwind CSS */
+@import url('https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css');
+
+/* Importar fontes */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* Variáveis CSS customizadas */
+:root {
+  --primary-blue: #1e3a8a;
+  --primary-green: #10b981;
+  --secondary-gray: #f8fafc;
+  --accent-orange: #f59e0b;
+  --text-dark: #1f2937;
+  --text-light: #6b7280;
+}
+
+/* Reset e configurações base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  color: var(--text-dark);
+  background-color: #ffffff;
+}
+
+/* Tipografia */
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Gradientes customizados */
+.gradient-hero {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-green) 100%);
+}
+
+.gradient-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+}
+
+/* Animações */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-pulse-hover:hover {
+  animation: pulse 0.3s ease-in-out;
+}
+
+/* Componentes customizados */
+.btn-primary {
+  @apply bg-blue-800 hover:bg-blue-900 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg;
+}
+
+.btn-secondary {
+  @apply bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg;
+}
+
+.btn-outline {
+  @apply border-2 border-blue-800 text-blue-800 hover:bg-blue-800 hover:text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300;
+}
+
+.card {
+  @apply bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1;
+}
+
+.card-lesson {
+  @apply bg-white shadow-md hover:shadow-lg transition-all duration-300 border-2 border-gray-200 hover:border-blue-300 h-full flex flex-col;
+  margin: 12px;
+  padding: 24px;
+  border-radius: 16px;
+  border: 4px solid #3b82f6;
+}
+
+.card-project {
+  @apply bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden;
+}
+
+/* Badges de nível */
+.badge-iniciante {
+  @apply bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium;
+}
+
+.badge-intermediario {
+  @apply bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium;
+}
+
+.badge-avancado {
+  @apply bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium;
+}
+
+/* Progress bars */
+.progress-bar {
+  @apply w-full bg-gray-200 rounded-full h-2;
+}
+
+.progress-fill {
+  @apply bg-green-500 h-2 rounded-full transition-all duration-500;
+}
+
+/* Syntax highlighting para código */
+.code-block {
+  @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto font-mono text-sm;
+}
+
+.code-inline {
+  @apply bg-gray-100 text-gray-800 px-2 py-1 rounded font-mono text-sm;
+}
+
+/* Navegação */
+.nav-link {
+  @apply text-gray-600 hover:text-blue-800 font-medium transition-colors duration-200 px-3 py-2 rounded-md hover:bg-gray-100;
+}
+
+.nav-link.active {
+  @apply text-blue-800 bg-blue-50;
+}
+
+/* Navegação fixa - garantir altura consistente */
+nav {
+  height: 64px !important; /* h-16 = 64px */
+  min-height: 64px !important;
+  max-height: 64px !important;
+}
+
+/* Sidebar */
+.sidebar {
+  @apply fixed left-0 top-16 h-full w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 z-50;
+  visibility: hidden;
+  /* Posicionar abaixo do nav fixo */
+  top: 64px;
+  height: calc(100vh - 64px);
+}
+
+/* Ajustes para o índice da aula - aumentar altura disponível */
+.sticky {
+  position: sticky;
+  top: 6rem; /* 24px = 6rem */
+}
+
+/* Aumentar altura máxima do container do índice */
+.lg\:col-span-1 .sticky > div:last-child {
+  max-height: calc(100vh - 12rem); /* Aumentar altura disponível */
+  overflow-y: auto; /* Permitir scroll se necessário */
+}
+
+/* Melhorar espaçamento interno do índice */
+.lg\:col-span-1 .sticky > div:last-child nav {
+  max-height: calc(100vh - 20rem); /* Altura específica para o nav do índice */
+  overflow-y: auto;
+  padding-bottom: 1rem;
+}
+
+/* Estilizar scrollbar do índice */
+.lg\:col-span-1 .sticky > div:last-child nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.lg\:col-span-1 .sticky > div:last-child nav::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+
+.lg\:col-span-1 .sticky > div:last-child nav::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.lg\:col-span-1 .sticky > div:last-child nav::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Garantir que o sidebar só apareça em mobile quando ativo */
+@media (min-width: 768px) {
+  .sidebar {
+    display: none !important;
+  }
+}
+
+.sidebar.open {
+  @apply translate-x-0;
+  visibility: visible;
+}
+
+/* Overlay para mobile */
+.overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 z-40 opacity-0 pointer-events-none transition-opacity duration-300;
+}
+
+.overlay.active {
+  @apply opacity-100 pointer-events-auto;
+}
+
+/* Responsividade customizada */
+/* Grid responsivo para cards das aulas */
+.grid-lessons {
+  @apply grid gap-8;
+  padding: 16px;
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.125rem;
+  }
+  
+  .grid-lessons {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-projects {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Corrigir espaçamento no mobile */
+  .gradient-hero {
+    padding-top: 64px !important; /* Altura do header fixo */
+    min-height: calc(100vh - 64px);
+  }
+  
+  body {
+    overflow-x: hidden;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .grid-lessons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .grid-projects {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1025px) {
+  .grid-lessons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .grid-projects {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Utilitários */
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.backdrop-blur {
+  backdrop-filter: blur(10px);
+}
+
+/* Estados de loading */
+.loading {
+  @apply animate-pulse;
+}
+
+.skeleton {
+  @apply bg-gray-200 rounded;
+}
+
+/* Scrollbar customizada */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Transições suaves */
+.smooth-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efeitos hover especiais */
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+/* Melhorias de navegação responsiva */
+.mobile-menu {
+  @apply fixed top-16 left-0 right-0 bg-white shadow-lg transform -translate-y-full transition-transform duration-300 z-60;
+}
+
+.mobile-menu.open {
+  @apply translate-y-0;
+}
+
+.mobile-menu-item {
+  @apply block px-6 py-4 text-gray-700 hover:bg-blue-50 hover:text-blue-800 transition-colors duration-200 border-b border-gray-100;
+}
+
+/* Breadcrumb responsivo */
+.breadcrumb {
+  @apply flex items-center space-x-2 text-sm text-gray-500 overflow-x-auto;
+}
+
+.breadcrumb-item {
+  @apply whitespace-nowrap hover:text-blue-800 transition-colors duration-200;
+}
+
+/* Cards interativos melhorados */
+.interactive-card {
+  @apply cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl;
+}
+
+.interactive-card:active {
+  @apply scale-95;
+}
+
+/* Tooltips */
+.tooltip {
+  @apply relative;
+}
+
+.tooltip::before {
+  content: attr(data-tooltip);
+  @apply absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 pointer-events-none transition-opacity duration-300 whitespace-nowrap z-50;
+}
+
+.tooltip:hover::before {
+  @apply opacity-100;
+}
+
+/* Indicadores de progresso melhorados */
+.progress-circle {
+  @apply relative w-16 h-16;
+}
+
+.progress-circle svg {
+  @apply transform -rotate-90;
+}
+
+.progress-circle-bg {
+  @apply stroke-gray-200;
+}
+
+.progress-circle-fill {
+  @apply stroke-blue-600 transition-all duration-500;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+/* Animações de entrada */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s ease-out;
+}
+
+/* Estados de foco melhorados */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+/* Botões com estados melhorados */
+.btn-loading {
+  @apply relative overflow-hidden;
+}
+
+.btn-loading::after {
+  content: '';
+  @apply absolute inset-0 bg-white bg-opacity-20 transform -translate-x-full transition-transform duration-500;
+}
+
+.btn-loading.loading::after {
+  @apply translate-x-full;
+}
+
+/* Modais e overlays */
+.modal {
+  @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+}
+
+.modal-backdrop {
+  @apply absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300;
+}
+
+.modal-content {
+  @apply relative bg-white rounded-lg shadow-xl max-w-lg w-full max-h-screen overflow-y-auto transform transition-all duration-300;
+}
+
+/* Notificações toast */
+.toast {
+  @apply fixed top-4 right-4 bg-white shadow-lg rounded-lg p-4 transform translate-x-full transition-transform duration-300 z-50;
+}
+
+.toast.show {
+  @apply translate-x-0;
+}
+
+.toast-success {
+  @apply border-l-4 border-green-500;
+}
+
+.toast-error {
+  @apply border-l-4 border-red-500;
+}
+
+.toast-warning {
+  @apply border-l-4 border-yellow-500;
+}
+
+.toast-info {
+  @apply border-l-4 border-blue-500;
+}
+
+/* Melhorias para dispositivos touch */
+@media (hover: none) and (pointer: coarse) {
+  .hover-lift:hover {
+    transform: none;
+  }
+  
+  .interactive-card:hover {
+    transform: none;
+  }
+  
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .btn-outline:hover {
+    transform: none;
+  }
+}
+
+/* Modo escuro (preparação) */
+@media (prefers-color-scheme: dark) {
+  .dark-mode {
+    @apply bg-gray-900 text-white;
+  }
+  
+  .dark-mode .card {
+    @apply bg-gray-800 text-white;
+  }
+  
+  .dark-mode .nav-link {
+    @apply text-gray-300 hover:text-white;
+  }
+}
+
+/* Acessibilidade */
+.sr-only {
+  @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+}
+
+.skip-link {
+  @apply absolute top-0 left-0 bg-blue-600 text-white px-4 py-2 transform -translate-y-full focus:translate-y-0 transition-transform duration-200 z-50;
+}
+
+/* Indicadores visuais */
+.pulse-dot {
+  @apply w-3 h-3 bg-green-500 rounded-full animate-pulse;
+}
+
+.status-online {
+  @apply w-3 h-3 bg-green-500 rounded-full;
+}
+
+.status-offline {
+  @apply w-3 h-3 bg-gray-400 rounded-full;
+}
+
+/* Responsividade avançada */
+@media (max-width: 640px) {
+  .container {
+    @apply px-4;
+  }
+  
+  .text-responsive {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+  }
+  
+  .hero-title {
+    font-size: clamp(2rem, 8vw, 3rem);
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .text-responsive {
+    font-size: clamp(1.125rem, 3vw, 1.75rem);
+  }
+}
+
+/* Utilitários de layout */
+.aspect-ratio-16-9 {
+  aspect-ratio: 16 / 9;
+}
+
+.aspect-ratio-4-3 {
+  aspect-ratio: 4 / 3;
+}
+
+.aspect-ratio-1-1 {
+  aspect-ratio: 1 / 1;
+}
+
+/* Efeitos de glassmorphism */
+.glass {
+  @apply bg-white bg-opacity-20 backdrop-blur-lg border border-white border-opacity-30;
+}
+
+.glass-dark {
+  @apply bg-gray-900 bg-opacity-20 backdrop-blur-lg border border-gray-700 border-opacity-30;
+}
