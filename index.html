@@ -234,9 +234,2427 @@
                                     </div>
                                 </div>
                             </div>
-                        </section>
-                        
-                        <!-- Seção 2: O que é Express.js -->
+                            
+                            <!-- Subsection 9.2: JavaScript Avançado -->
+                            <div class="mb-8">
+                                <h3 class="text-xl font-semibold text-gray-900 mb-4">9.2 Melhorando o JavaScript - produtos.js</h3>
+                                
+                                <p class="text-gray-700 mb-4">
+                                    Agora vamos criar um arquivo JavaScript dedicado para a página de produtos, 
+                                    com funcionalidades avançadas como filtros, busca e tratamento de erros.
+                                </p>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">📁 public/js/produtos.js - JavaScript Avançado</h4>
+                                    <pre><code class="language-javascript">// Variáveis globais
+let todosProdutos = [];
+let produtosFiltrados = [];
+let categoriaAtual = 'todos';
+
+// Elementos do DOM
+const produtosContainer = document.getElementById('produtos-container');
+const loadingElement = document.getElementById('loading');
+const erroContainer = document.getElementById('erro-container');
+const filtroButtons = document.querySelectorAll('.filtro-btn');
+
+// Função para mostrar loading
+function mostrarLoading() {
+    loadingElement.style.display = 'block';
+    produtosContainer.style.display = 'none';
+    erroContainer.style.display = 'none';
+}
+
+// Função para esconder loading
+function esconderLoading() {
+    loadingElement.style.display = 'none';
+    produtosContainer.style.display = 'block';
+}
+
+// Função para mostrar erro
+function mostrarErro(mensagem = 'Erro ao carregar produtos') {
+    loadingElement.style.display = 'none';
+    produtosContainer.style.display = 'none';
+    erroContainer.style.display = 'block';
+    erroContainer.querySelector('p').textContent = `❌ ${mensagem}`;
+}
+
+// Função para buscar produtos da API
+async function buscarProdutos() {
+    try {
+        mostrarLoading();
+        
+        const response = await fetch('/api/produtos');
+        
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        
+        const produtos = await response.json();
+        
+        if (!Array.isArray(produtos)) {
+            throw new Error('Formato de dados inválido');
+        }
+        
+        todosProdutos = produtos;
+        produtosFiltrados = produtos;
+        
+        esconderLoading();
+        renderizarProdutos();
+        
+    } catch (error) {
+        console.error('Erro ao buscar produtos:', error);
+        mostrarErro(`Erro ao carregar produtos: ${error.message}`);
+    }
+}
+
+// Função para buscar categorias da API
+async function buscarCategorias() {
+    try {
+        const response = await fetch('/api/categorias');
+        
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        
+        const categorias = await response.json();
+        return categorias;
+        
+    } catch (error) {
+        console.error('Erro ao buscar categorias:', error);
+        return [];
+    }
+}
+
+// Função para obter nome da categoria
+function obterNomeCategoria(categoriaId) {
+    const categorias = {
+        1: 'Pães',
+        2: 'Doces', 
+        3: 'Salgados'
+    };
+    return categorias[categoriaId] || 'Categoria';
+}
+
+// Função para renderizar um produto
+function criarCardProduto(produto) {
+    const disponibilidade = produto.disponivel ? 
+        '<span class="disponibilidade disponivel">✅ Disponível</span>' :
+        '<span class="disponibilidade indisponivel">❌ Indisponível</span>';
+    
+    return `
+        <div class="produto-card" data-categoria="${produto.categoria_id}">
+            <div class="categoria">${obterNomeCategoria(produto.categoria_id)}</div>
+            <h4>${produto.nome}</h4>
+            <p class="descricao">${produto.descricao}</p>
+            <div class="preco">R$ ${produto.preco.toFixed(2)}</div>
+            ${disponibilidade}
+        </div>
+    `;
+}
+
+// Função para renderizar todos os produtos
+function renderizarProdutos() {
+    if (produtosFiltrados.length === 0) {
+        produtosContainer.innerHTML = `
+            <div class="no-products">
+                <p>😔 Nenhum produto encontrado para esta categoria.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const produtosHTML = produtosFiltrados
+        .map(produto => criarCardProduto(produto))
+        .join('');
+    
+    produtosContainer.innerHTML = produtosHTML;
+}
+
+// Função para filtrar produtos por categoria
+function filtrarPorCategoria(categoria) {
+    categoriaAtual = categoria;
+    
+    if (categoria === 'todos') {
+        produtosFiltrados = todosProdutos;
+    } else {
+        produtosFiltrados = todosProdutos.filter(
+            produto => produto.categoria_id.toString() === categoria
+        );
+    }
+    
+    renderizarProdutos();
+    
+    // Atualizar botões ativos
+    filtroButtons.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.categoria === categoria) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+// Função para adicionar event listeners
+function adicionarEventListeners() {
+    // Event listeners para filtros
+    filtroButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const categoria = button.dataset.categoria;
+            filtrarPorCategoria(categoria);
+        });
+    });
+    
+    // Event listener para retry em caso de erro
+    erroContainer.addEventListener('click', () => {
+        buscarProdutos();
+    });
+}
+
+// Função de inicialização
+async function inicializar() {
+    console.log('🚀 Inicializando página de produtos...');
+    
+    adicionarEventListeners();
+    await buscarProdutos();
+    
+    console.log('✅ Página de produtos carregada com sucesso!');
+}
+
+// Inicializar quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', inicializar);</code></pre>
+                                </div>
+                                
+                                <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-4">
+                                    <div class="flex">
+                                        <div class="flex-shrink-0">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <h4 class="text-sm font-semibold text-green-900">🚀 Funcionalidades Avançadas:</h4>
+                                            <ul class="text-sm text-green-700 mt-2 space-y-1">
+                                                <li>• <strong>Async/Await:</strong> Código moderno para requisições</li>
+                                                <li>• <strong>Tratamento de Erros:</strong> Try/catch com mensagens específicas</li>
+                                                <li>• <strong>Estados de Loading:</strong> Feedback visual durante carregamento</li>
+                                                <li>• <strong>Filtros Dinâmicos:</strong> Filtrar produtos por categoria</li>
+                                                <li>• <strong>Validação de Dados:</strong> Verificação de formato da API</li>
+                                                <li>• <strong>Retry Automático:</strong> Clique no erro para tentar novamente</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h4 class="text-lg font-semibold text-gray-900 mb-3">🔄 Melhorias no main.js Original</h4>
+                                <p class="text-gray-700 mb-3">
+                                    Também podemos melhorar o arquivo <code class="code-inline">main.js</code> original da página inicial:
+                                </p>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">📁 public/js/main.js - Versão Melhorada</h4>
+                                    <pre><code class="language-javascript">// Versão melhorada do main.js com tratamento de erros
+class PadariaApp {
+    constructor() {
+        this.categorias = [];
+        this.categoriasContainer = document.getElementById('categorias-container');
+        this.init();
+    }
+    
+    async init() {
+        console.log('🥖 Inicializando Padaria Doce Sabor...');
+        
+        try {
+            await this.carregarCategorias();
+            this.renderizarCategorias();
+            console.log('✅ Aplicação carregada com sucesso!');
+        } catch (error) {
+            console.error('❌ Erro ao inicializar aplicação:', error);
+            this.mostrarErroCarregamento();
+        }
+    }
+    
+    async carregarCategorias() {
+        try {
+            const response = await fetch('/api/categorias');
+            
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
+            
+            this.categorias = await response.json();
+            
+            if (!Array.isArray(this.categorias)) {
+                throw new Error('Formato de dados inválido');
+            }
+            
+        } catch (error) {
+            console.error('Erro ao buscar categorias:', error);
+            throw error;
+        }
+    }
+    
+    renderizarCategorias() {
+        if (!this.categoriasContainer) {
+            console.warn('Container de categorias não encontrado');
+            return;
+        }
+        
+        if (this.categorias.length === 0) {
+            this.categoriasContainer.innerHTML = `
+                <div class="no-categories">
+                    <p>😔 Nenhuma categoria disponível no momento.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const categoriasHTML = this.categorias
+            .map(categoria => this.criarCardCategoria(categoria))
+            .join('');
+        
+        this.categoriasContainer.innerHTML = categoriasHTML;
+        
+        // Adicionar event listeners
+        this.adicionarEventListeners();
+    }
+    
+    criarCardCategoria(categoria) {
+        return `
+            <div class="categoria-card" data-categoria-id="${categoria.id}">
+                <h3>${categoria.nome}</h3>
+                <p>${categoria.descricao}</p>
+                <button class="btn-ver-produtos" data-categoria="${categoria.id}">
+                    Ver Produtos
+                </button>
+            </div>
+        `;
+    }
+    
+    adicionarEventListeners() {
+        const botoesProdutos = document.querySelectorAll('.btn-ver-produtos');
+        
+        botoesProdutos.forEach(botao => {
+            botao.addEventListener('click', (e) => {
+                const categoriaId = e.target.dataset.categoria;
+                this.navegarParaProdutos(categoriaId);
+            });
+        });
+    }
+    
+    navegarParaProdutos(categoriaId = 'todos') {
+        // Navegar para página de produtos com categoria específica
+        const url = `/produtos.html?categoria=${categoriaId}`;
+        window.location.href = url;
+    }
+    
+    mostrarErroCarregamento() {
+        if (this.categoriasContainer) {
+            this.categoriasContainer.innerHTML = `
+                <div class="erro-carregamento">
+                    <p>❌ Erro ao carregar categorias.</p>
+                    <button onclick="location.reload()" class="btn-retry">
+                        🔄 Tentar Novamente
+                    </button>
+                </div>
+            `;
+        }
+    }
+}
+
+// Inicializar aplicação quando DOM estiver carregado
+document.addEventListener('DOMContentLoaded', () => {
+    new PadariaApp();
+});</code></pre>
+                                </div>
+                             </div>
+                             
+                             <!-- Subsection 9.3: APIs Avançadas e CRUD -->
+                             <div class="mb-8">
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">9.3 Rotas de API Avançadas - Operações CRUD</h3>
+                                 
+                                 <p class="text-gray-700 mb-4">
+                                     Vamos expandir nossa API com operações CRUD completas (Create, Read, Update, Delete) 
+                                     para produtos e adicionar funcionalidades como busca e paginação.
+                                 </p>
+                                 
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                     <h4 class="font-medium text-gray-900 mb-2">📁 app.js - APIs CRUD Completas</h4>
+                                     <pre><code class="language-javascript">// Adicione estas rotas ao seu app.js existente
+
+// ===== ROTAS PARA PRODUTOS =====
+
+// GET /api/produtos/:id - Buscar produto específico
+app.get('/api/produtos/:id', (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        
+        if (isNaN(id)) {
+            return res.status(400).json({
+                erro: 'ID inválido',
+                mensagem: 'O ID deve ser um número'
+            });
+        }
+        
+        const produto = produtos.find(p => p.id === id);
+        
+        if (!produto) {
+            return res.status(404).json({
+                erro: 'Produto não encontrado',
+                mensagem: `Produto com ID ${id} não existe`
+            });
+        }
+        
+        res.json(produto);
+    } catch (error) {
+        res.status(500).json({
+            erro: 'Erro interno do servidor',
+            mensagem: error.message
+        });
+    }
+});
+
+// POST /api/produtos - Criar novo produto
+app.post('/api/produtos', (req, res) => {
+    try {
+        const { nome, descricao, preco, categoria_id, disponivel } = req.body;
+        
+        // Validações
+        if (!nome || !descricao || !preco || !categoria_id) {
+            return res.status(400).json({
+                erro: 'Dados obrigatórios ausentes',
+                mensagem: 'Nome, descrição, preço e categoria são obrigatórios'
+            });
+        }
+        
+        if (typeof preco !== 'number' || preco <= 0) {
+            return res.status(400).json({
+                erro: 'Preço inválido',
+                mensagem: 'O preço deve ser um número positivo'
+            });
+        }
+        
+        // Verificar se categoria existe
+        const categoriaExiste = categorias.find(c => c.id === categoria_id);
+        if (!categoriaExiste) {
+            return res.status(400).json({
+                erro: 'Categoria inválida',
+                mensagem: 'A categoria especificada não existe'
+            });
+        }
+        
+        // Criar novo produto
+        const novoId = Math.max(...produtos.map(p => p.id)) + 1;
+        const novoProduto = {
+            id: novoId,
+            nome: nome.trim(),
+            descricao: descricao.trim(),
+            preco: parseFloat(preco),
+            categoria_id,
+            disponivel: disponivel !== false // default true
+        };
+        
+        produtos.push(novoProduto);
+        
+        res.status(201).json({
+            mensagem: 'Produto criado com sucesso',
+            produto: novoProduto
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            erro: 'Erro interno do servidor',
+            mensagem: error.message
+        });
+    }
+});
+
+// PUT /api/produtos/:id - Atualizar produto
+app.put('/api/produtos/:id', (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        const { nome, descricao, preco, categoria_id, disponivel } = req.body;
+        
+        if (isNaN(id)) {
+            return res.status(400).json({
+                erro: 'ID inválido',
+                mensagem: 'O ID deve ser um número'
+            });
+        }
+        
+        const produtoIndex = produtos.findIndex(p => p.id === id);
+        
+        if (produtoIndex === -1) {
+            return res.status(404).json({
+                erro: 'Produto não encontrado',
+                mensagem: `Produto com ID ${id} não existe`
+            });
+        }
+        
+        // Validações opcionais (só valida se fornecido)
+        if (preco !== undefined && (typeof preco !== 'number' || preco <= 0)) {
+            return res.status(400).json({
+                erro: 'Preço inválido',
+                mensagem: 'O preço deve ser um número positivo'
+            });
+        }
+        
+        if (categoria_id !== undefined) {
+            const categoriaExiste = categorias.find(c => c.id === categoria_id);
+            if (!categoriaExiste) {
+                return res.status(400).json({
+                    erro: 'Categoria inválida',
+                    mensagem: 'A categoria especificada não existe'
+                });
+            }
+        }
+        
+        // Atualizar produto
+        const produtoAtualizado = {
+            ...produtos[produtoIndex],
+            ...(nome && { nome: nome.trim() }),
+            ...(descricao && { descricao: descricao.trim() }),
+            ...(preco !== undefined && { preco: parseFloat(preco) }),
+            ...(categoria_id !== undefined && { categoria_id }),
+            ...(disponivel !== undefined && { disponivel })
+        };
+        
+        produtos[produtoIndex] = produtoAtualizado;
+        
+        res.json({
+            mensagem: 'Produto atualizado com sucesso',
+            produto: produtoAtualizado
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            erro: 'Erro interno do servidor',
+            mensagem: error.message
+        });
+    }
+});
+
+// DELETE /api/produtos/:id - Deletar produto
+app.delete('/api/produtos/:id', (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        
+        if (isNaN(id)) {
+            return res.status(400).json({
+                erro: 'ID inválido',
+                mensagem: 'O ID deve ser um número'
+            });
+        }
+        
+        const produtoIndex = produtos.findIndex(p => p.id === id);
+        
+        if (produtoIndex === -1) {
+            return res.status(404).json({
+                erro: 'Produto não encontrado',
+                mensagem: `Produto com ID ${id} não existe`
+            });
+        }
+        
+        const produtoRemovido = produtos.splice(produtoIndex, 1)[0];
+        
+        res.json({
+            mensagem: 'Produto removido com sucesso',
+            produto: produtoRemovido
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            erro: 'Erro interno do servidor',
+            mensagem: error.message
+        });
+    }
+});
+
+// GET /api/produtos/buscar - Buscar produtos
+app.get('/api/produtos/buscar', (req, res) => {
+    try {
+        const { q, categoria, disponivel, limite, pagina } = req.query;
+        
+        let produtosFiltrados = [...produtos];
+        
+        // Filtro por texto (nome ou descrição)
+        if (q) {
+            const termo = q.toLowerCase();
+            produtosFiltrados = produtosFiltrados.filter(produto => 
+                produto.nome.toLowerCase().includes(termo) ||
+                produto.descricao.toLowerCase().includes(termo)
+            );
+        }
+        
+        // Filtro por categoria
+        if (categoria) {
+            const categoriaId = parseInt(categoria);
+            if (!isNaN(categoriaId)) {
+                produtosFiltrados = produtosFiltrados.filter(
+                    produto => produto.categoria_id === categoriaId
+                );
+            }
+        }
+        
+        // Filtro por disponibilidade
+        if (disponivel !== undefined) {
+            const isDisponivel = disponivel === 'true';
+            produtosFiltrados = produtosFiltrados.filter(
+                produto => produto.disponivel === isDisponivel
+            );
+        }
+        
+        // Paginação
+        const limitePorPagina = parseInt(limite) || 10;
+        const paginaAtual = parseInt(pagina) || 1;
+        const inicio = (paginaAtual - 1) * limitePorPagina;
+        const fim = inicio + limitePorPagina;
+        
+        const produtosPaginados = produtosFiltrados.slice(inicio, fim);
+        const totalProdutos = produtosFiltrados.length;
+        const totalPaginas = Math.ceil(totalProdutos / limitePorPagina);
+        
+        res.json({
+            produtos: produtosPaginados,
+            paginacao: {
+                pagina_atual: paginaAtual,
+                total_paginas: totalPaginas,
+                total_produtos: totalProdutos,
+                produtos_por_pagina: limitePorPagina
+            },
+            filtros_aplicados: {
+                busca: q || null,
+                categoria: categoria || null,
+                disponivel: disponivel || null
+            }
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            erro: 'Erro interno do servidor',
+            mensagem: error.message
+        });
+    }
+});</code></pre>
+                                 </div>
+                                 
+                                 <div class="bg-purple-50 border-l-4 border-purple-400 p-4 mb-4">
+                                     <div class="flex">
+                                         <div class="flex-shrink-0">
+                                             <i data-lucide="database" class="w-5 h-5 text-purple-400"></i>
+                                         </div>
+                                         <div class="ml-3">
+                                             <h4 class="text-sm font-semibold text-purple-900">🔧 Operações CRUD Implementadas:</h4>
+                                             <ul class="text-sm text-purple-700 mt-2 space-y-1">
+                                                 <li>• <strong>CREATE:</strong> POST /api/produtos - Criar novos produtos</li>
+                                                 <li>• <strong>READ:</strong> GET /api/produtos/:id - Buscar produto específico</li>
+                                                 <li>• <strong>UPDATE:</strong> PUT /api/produtos/:id - Atualizar produto</li>
+                                                 <li>• <strong>DELETE:</strong> DELETE /api/produtos/:id - Remover produto</li>
+                                                 <li>• <strong>SEARCH:</strong> GET /api/produtos/buscar - Busca avançada</li>
+                                             </ul>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">🧪 Testando as APIs</h4>
+                                 <p class="text-gray-700 mb-3">
+                                     Você pode testar essas APIs usando ferramentas como Postman, Insomnia ou curl:
+                                 </p>
+                                 
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                     <h4 class="font-medium text-gray-900 mb-2">💻 Exemplos de Teste com curl</h4>
+                                     <pre><code class="language-bash"># Buscar produto específico
+curl http://localhost:3000/api/produtos/1
+
+# Criar novo produto
+curl -X POST http://localhost:3000/api/produtos \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "Croissant de Chocolate",
+    "descricao": "Delicioso croissant recheado com chocolate",
+    "preco": 8.50,
+    "categoria_id": 2,
+    "disponivel": true
+  }'
+
+# Atualizar produto
+curl -X PUT http://localhost:3000/api/produtos/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "preco": 6.00,
+    "disponivel": false
+  }'
+
+# Buscar produtos
+curl "http://localhost:3000/api/produtos/buscar?q=pão&categoria=1&limite=5"
+
+# Deletar produto
+curl -X DELETE http://localhost:3000/api/produtos/1</code></pre>
+                                 </div>
+                                 
+                                 <div class="bg-orange-50 border-l-4 border-orange-400 p-4">
+                                     <div class="flex">
+                                         <div class="flex-shrink-0">
+                                             <i data-lucide="shield-check" class="w-5 h-5 text-orange-400"></i>
+                                         </div>
+                                         <div class="ml-3">
+                                             <h4 class="text-sm font-semibold text-orange-900">🛡️ Validações Implementadas:</h4>
+                                             <ul class="text-sm text-orange-700 mt-2 space-y-1">
+                                                 <li>• <strong>Validação de tipos:</strong> Verificação de números e strings</li>
+                                                 <li>• <strong>Campos obrigatórios:</strong> Validação de dados necessários</li>
+                                                 <li>• <strong>Existência de recursos:</strong> Verificação se produto/categoria existe</li>
+                                                 <li>• <strong>Tratamento de erros:</strong> Respostas padronizadas para erros</li>
+                                                 <li>• <strong>Códigos HTTP corretos:</strong> 200, 201, 400, 404, 500</li>
+                                             </ul>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                             
+                             <!-- Subsection 9.4: Tratamento de Erros Avançado -->
+                             <div class="mb-8">
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">9.4 Tratamento de Erros Avançado para APIs</h3>
+                                 
+                                 <p class="text-gray-700 mb-4">
+                                     Um bom tratamento de erros é essencial para APIs profissionais. Vamos implementar 
+                                     um sistema robusto de tratamento de erros com middleware personalizado e logs.
+                                 </p>
+                                 
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                     <h4 class="font-medium text-gray-900 mb-2">📁 middleware/errorHandler.js - Middleware de Erros</h4>
+                                     <pre><code class="language-javascript">// Crie o arquivo middleware/errorHandler.js
+
+// Classe personalizada para erros da API
+class ApiError extends Error {
+    constructor(message, statusCode, code = null) {
+        super(message);
+        this.statusCode = statusCode;
+        this.code = code;
+        this.isOperational = true;
+        
+        Error.captureStackTrace(this, this.constructor);
+    }
+}
+
+// Middleware para capturar erros assíncronos
+const asyncHandler = (fn) => {
+    return (req, res, next) => {
+        Promise.resolve(fn(req, res, next)).catch(next);
+    };
+};
+
+// Middleware de tratamento de erros global
+const errorHandler = (err, req, res, next) => {
+    let error = { ...err };
+    error.message = err.message;
+    
+    // Log do erro para desenvolvimento
+    console.error('🚨 Erro capturado:', {
+        message: err.message,
+        stack: err.stack,
+        url: req.originalUrl,
+        method: req.method,
+        ip: req.ip,
+        timestamp: new Date().toISOString()
+    });
+    
+    // Erro de validação do Mongoose (se usando MongoDB)
+    if (err.name === 'ValidationError') {
+        const message = Object.values(err.errors).map(val => val.message).join(', ');
+        error = new ApiError(message, 400, 'VALIDATION_ERROR');
+    }
+    
+    // Erro de recurso não encontrado
+    if (err.name === 'CastError') {
+        const message = 'Recurso não encontrado';
+        error = new ApiError(message, 404, 'RESOURCE_NOT_FOUND');
+    }
+    
+    // Erro de chave duplicada
+    if (err.code === 11000) {
+        const field = Object.keys(err.keyValue)[0];
+        const message = `${field} já existe`;
+        error = new ApiError(message, 400, 'DUPLICATE_FIELD');
+    }
+    
+    // Erro de JSON malformado
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        error = new ApiError('JSON inválido na requisição', 400, 'INVALID_JSON');
+    }
+    
+    // Resposta padronizada de erro
+    const response = {
+        sucesso: false,
+        erro: {
+            mensagem: error.message || 'Erro interno do servidor',
+            codigo: error.code || 'INTERNAL_ERROR',
+            status: error.statusCode || 500
+        },
+        timestamp: new Date().toISOString(),
+        path: req.originalUrl
+    };
+    
+    // Adicionar stack trace apenas em desenvolvimento
+    if (process.env.NODE_ENV === 'development') {
+        response.erro.stack = err.stack;
+    }
+    
+    res.status(error.statusCode || 500).json(response);
+};
+
+// Middleware para rotas não encontradas
+const notFound = (req, res, next) => {
+    const error = new ApiError(
+        `Rota ${req.originalUrl} não encontrada`,
+        404,
+        'ROUTE_NOT_FOUND'
+    );
+    next(error);
+};
+
+module.exports = {
+    ApiError,
+    asyncHandler,
+    errorHandler,
+    notFound
+};</code></pre>
+                                 </div>
+                                 
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                     <h4 class="font-medium text-gray-900 mb-2">📁 app.js - Implementando o Tratamento de Erros</h4>
+                                     <pre><code class="language-javascript">const express = require('express');
+const { ApiError, asyncHandler, errorHandler, notFound } = require('./middleware/errorHandler');
+
+const app = express();
+
+// Middleware para parsing JSON
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+// Middleware para logs de requisições
+app.use((req, res, next) => {
+    console.log(`📝 ${req.method} ${req.originalUrl} - ${new Date().toISOString()}`);
+    next();
+});
+
+// Servir arquivos estáticos
+app.use(express.static('public'));
+
+// ===== ROTAS COM TRATAMENTO DE ERROS =====
+
+// Rota com validação robusta
+app.get('/api/produtos/:id', asyncHandler(async (req, res) => {
+    const id = parseInt(req.params.id);
+    
+    // Validação de ID
+    if (isNaN(id) || id <= 0) {
+        throw new ApiError('ID deve ser um número positivo', 400, 'INVALID_ID');
+    }
+    
+    const produto = produtos.find(p => p.id === id);
+    
+    if (!produto) {
+        throw new ApiError(
+            `Produto com ID ${id} não encontrado`,
+            404,
+            'PRODUCT_NOT_FOUND'
+        );
+    }
+    
+    res.json({
+        sucesso: true,
+        dados: produto,
+        timestamp: new Date().toISOString()
+    });
+}));
+
+// Rota de criação com validações completas
+app.post('/api/produtos', asyncHandler(async (req, res) => {
+    const { nome, descricao, preco, categoria_id, disponivel } = req.body;
+    
+    // Validações detalhadas
+    const erros = [];
+    
+    if (!nome || nome.trim().length === 0) {
+        erros.push('Nome é obrigatório');
+    } else if (nome.trim().length < 2) {
+        erros.push('Nome deve ter pelo menos 2 caracteres');
+    }
+    
+    if (!descricao || descricao.trim().length === 0) {
+        erros.push('Descrição é obrigatória');
+    }
+    
+    if (preco === undefined || preco === null) {
+        erros.push('Preço é obrigatório');
+    } else if (typeof preco !== 'number' || preco <= 0) {
+        erros.push('Preço deve ser um número positivo');
+    } else if (preco > 10000) {
+        erros.push('Preço não pode exceder R$ 10.000');
+    }
+    
+    if (!categoria_id) {
+        erros.push('Categoria é obrigatória');
+    } else {
+        const categoriaExiste = categorias.find(c => c.id === categoria_id);
+        if (!categoriaExiste) {
+            erros.push('Categoria especificada não existe');
+        }
+    }
+    
+    // Se há erros de validação, lançar erro
+    if (erros.length > 0) {
+        throw new ApiError(
+            `Erros de validação: ${erros.join(', ')}`,
+            400,
+            'VALIDATION_ERRORS'
+        );
+    }
+    
+    // Verificar se produto já existe
+    const produtoExistente = produtos.find(
+        p => p.nome.toLowerCase() === nome.trim().toLowerCase()
+    );
+    
+    if (produtoExistente) {
+        throw new ApiError(
+            'Já existe um produto com este nome',
+            409,
+            'PRODUCT_ALREADY_EXISTS'
+        );
+    }
+    
+    // Criar produto
+    const novoId = Math.max(...produtos.map(p => p.id), 0) + 1;
+    const novoProduto = {
+        id: novoId,
+        nome: nome.trim(),
+        descricao: descricao.trim(),
+        preco: parseFloat(preco.toFixed(2)),
+        categoria_id,
+        disponivel: disponivel !== false,
+        criado_em: new Date().toISOString()
+    };
+    
+    produtos.push(novoProduto);
+    
+    res.status(201).json({
+        sucesso: true,
+        mensagem: 'Produto criado com sucesso',
+        dados: novoProduto,
+        timestamp: new Date().toISOString()
+    });
+}));
+
+// Rota para simular erro interno
+app.get('/api/erro-teste', asyncHandler(async (req, res) => {
+    // Simular erro inesperado
+    throw new Error('Este é um erro de teste para demonstração');
+}));
+
+// Rota para testar diferentes tipos de erro
+app.get('/api/erro/:tipo', asyncHandler(async (req, res) => {
+    const { tipo } = req.params;
+    
+    switch (tipo) {
+        case 'validacao':
+            throw new ApiError('Erro de validação simulado', 400, 'VALIDATION_ERROR');
+        case 'nao-encontrado':
+            throw new ApiError('Recurso não encontrado', 404, 'NOT_FOUND');
+        case 'nao-autorizado':
+            throw new ApiError('Acesso não autorizado', 401, 'UNAUTHORIZED');
+        case 'conflito':
+            throw new ApiError('Conflito de dados', 409, 'CONFLICT');
+        case 'limite-excedido':
+            throw new ApiError('Limite de requisições excedido', 429, 'RATE_LIMIT');
+        default:
+            throw new ApiError('Tipo de erro inválido', 400, 'INVALID_ERROR_TYPE');
+    }
+}));
+
+// ===== MIDDLEWARE DE TRATAMENTO DE ERROS =====
+
+// Middleware para rotas não encontradas (deve vir antes do errorHandler)
+app.use(notFound);
+
+// Middleware global de tratamento de erros (deve ser o último)
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`🚀 Servidor rodando na porta ${PORT}`);
+    console.log(`📱 Acesse: http://localhost:${PORT}`);
+});</code></pre>
+                                 </div>
+                                 
+                                 <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                                     <div class="flex">
+                                         <div class="flex-shrink-0">
+                                             <i data-lucide="shield-alert" class="w-5 h-5 text-blue-400"></i>
+                                         </div>
+                                         <div class="ml-3">
+                                             <h4 class="text-sm font-semibold text-blue-900">🛡️ Recursos do Sistema de Erros:</h4>
+                                             <ul class="text-sm text-blue-700 mt-2 space-y-1">
+                                                 <li>• <strong>Classe ApiError personalizada:</strong> Erros estruturados com códigos</li>
+                                                 <li>• <strong>AsyncHandler:</strong> Captura automática de erros assíncronos</li>
+                                                 <li>• <strong>Validações robustas:</strong> Múltiplas verificações de dados</li>
+                                                 <li>• <strong>Logs detalhados:</strong> Informações completas para debugging</li>
+                                                 <li>• <strong>Respostas padronizadas:</strong> Formato consistente de erro</li>
+                                                 <li>• <strong>Códigos HTTP corretos:</strong> Status apropriados para cada situação</li>
+                                             </ul>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">🧪 Testando o Sistema de Erros</h4>
+                                 <p class="text-gray-700 mb-3">
+                                     Teste diferentes cenários de erro para verificar se o sistema está funcionando:
+                                 </p>
+                                 
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                     <h4 class="font-medium text-gray-900 mb-2">💻 Exemplos de Teste de Erros</h4>
+                                     <pre><code class="language-bash"># Teste de ID inválido
+curl http://localhost:3000/api/produtos/abc
+
+# Teste de produto não encontrado
+curl http://localhost:3000/api/produtos/999
+
+# Teste de validação (dados faltando)
+curl -X POST http://localhost:3000/api/produtos \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# Teste de preço inválido
+curl -X POST http://localhost:3000/api/produtos \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nome": "Teste",
+    "descricao": "Descrição",
+    "preco": -5,
+    "categoria_id": 1
+  }'
+
+# Teste de rota não encontrada
+curl http://localhost:3000/api/rota-inexistente
+
+# Teste de erro interno
+curl http://localhost:3000/api/erro-teste
+
+# Teste de diferentes tipos de erro
+curl http://localhost:3000/api/erro/validacao
+curl http://localhost:3000/api/erro/nao-encontrado
+curl http://localhost:3000/api/erro/nao-autorizado</code></pre>
+                                 </div>
+                                 
+                                 <div class="bg-green-50 border-l-4 border-green-400 p-4">
+                                     <div class="flex">
+                                         <div class="flex-shrink-0">
+                                             <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                                         </div>
+                                         <div class="ml-3">
+                                             <h4 class="text-sm font-semibold text-green-900">✅ Benefícios do Tratamento Robusto:</h4>
+                                             <ul class="text-sm text-green-700 mt-2 space-y-1">
+                                                 <li>• <strong>Debugging facilitado:</strong> Logs detalhados ajudam a identificar problemas</li>
+                                                 <li>• <strong>UX melhorada:</strong> Mensagens de erro claras para o usuário</li>
+                                                 <li>• <strong>Segurança:</strong> Não exposição de informações sensíveis</li>
+                                                 <li>• <strong>Manutenibilidade:</strong> Código organizado e fácil de manter</li>
+                                                 <li>• <strong>Monitoramento:</strong> Base para sistemas de alertas</li>
+                                             </ul>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </section>
+
+                         <!-- Seção 9.5: Processo de Build com Webpack -->
+                         <section class="bg-white rounded-lg shadow-md p-8 mb-8">
+                             <div class="section">
+                                 <h2 class="text-2xl font-bold text-gray-900 mb-6">9.5 Processo de Build com Webpack</h2>
+                                 <p class="text-gray-700 mb-6">
+                                     Configure um processo de build profissional para otimizar seu projeto Express com frontend moderno:
+                                 </p>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">📦 Instalação do Webpack</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-bash"># Dependências principais do Webpack
+npm install --save-dev webpack webpack-cli webpack-dev-server
+
+# Plugins e loaders essenciais
+npm install --save-dev html-webpack-plugin css-loader style-loader
+npm install --save-dev mini-css-extract-plugin terser-webpack-plugin
+
+# Para desenvolvimento simultâneo
+npm install --save-dev concurrently</code></pre>
+                                 </div>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">⚙️ Configuração - webpack.config.js</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-javascript">const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === 'production';
+  
+  return {
+    // Pontos de entrada para diferentes páginas
+    entry: {
+      main: './public/js/main.js',
+      produtos: './public/js/produtos.js'
+    },
+    
+    // Configuração de saída
+    output: {
+      path: path.resolve(__dirname, 'dist'),
+      filename: isProduction ? '[name].[contenthash].js' : '[name].js',
+      clean: true // Limpa a pasta dist a cada build
+    },
+    
+    // Configuração de módulos e loaders
+    module: {
+      rules: [
+        {
+          test: /\.css$/i,
+          use: [
+            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+            'css-loader'
+          ]
+        },
+        {
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
+          type: 'asset/resource'
+        },
+        {
+          test: /\.(woff|woff2|eot|ttf|otf)$/i,
+          type: 'asset/resource'
+        }
+      ]
+    },
+    
+    // Plugins para diferentes funcionalidades
+    plugins: [
+      // Plugin para index.html
+      new HtmlWebpackPlugin({
+        template: './public/index.html',
+        filename: 'index.html',
+        chunks: ['main']
+      }),
+      // Plugin para produtos.html
+      new HtmlWebpackPlugin({
+        template: './public/produtos.html',
+        filename: 'produtos.html',
+        chunks: ['produtos']
+      }),
+      // Plugin para extração de CSS em produção
+      ...(isProduction ? [
+        new MiniCssExtractPlugin({
+          filename: '[name].[contenthash].css'
+        })
+      ] : [])
+    ],
+    
+    // Otimizações para produção
+    optimization: {
+      minimize: isProduction,
+      minimizer: [new TerserPlugin()],
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all'
+          }
+        }
+      }
+    },
+    
+    // Servidor de desenvolvimento
+    devServer: {
+      static: {
+        directory: path.join(__dirname, 'dist')
+      },
+      compress: true,
+      port: 8080,
+      hot: true, // Hot Module Replacement
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3000',
+          changeOrigin: true
+        }
+      }
+    }
+  };
+};</code></pre>
+                                 </div>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">📝 Scripts no package.json</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-json">{
+  "name": "express-webpack-project",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "start": "node app.js",
+    "dev:full": "concurrently \"npm run start\" \"npm run dev\"",
+    "preview": "npm run build && npm run start"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.0",
+    "webpack-dev-server": "^4.15.0",
+    "html-webpack-plugin": "^5.5.0",
+    "css-loader": "^6.8.0",
+    "style-loader": "^3.3.0",
+    "mini-css-extract-plugin": "^2.7.0",
+    "terser-webpack-plugin": "^5.3.0"
+  }
+}</code></pre>
+                                 </div>
+
+                                 <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                                     <div class="flex">
+                                         <div class="flex-shrink-0">
+                                             <i data-lucide="zap" class="w-5 h-5 text-blue-400"></i>
+                                         </div>
+                                         <div class="ml-3">
+                                             <h4 class="text-sm font-semibold text-blue-900">🚀 Benefícios do Build Process:</h4>
+                                             <ul class="text-sm text-blue-700 mt-2 space-y-1">
+                                                 <li>• <strong>Minificação:</strong> Reduz drasticamente o tamanho dos arquivos</li>
+                                                 <li>• <strong>Bundle Splitting:</strong> Separa código vendor do aplicativo</li>
+                                                 <li>• <strong>Cache Busting:</strong> Nomes com hash para cache eficiente</li>
+                                                 <li>• <strong>Hot Reload:</strong> Atualização automática durante desenvolvimento</li>
+                                                 <li>• <strong>Proxy API:</strong> Integração seamless com backend</li>
+                                                 <li>• <strong>Otimização CSS:</strong> Extração e minificação de estilos</li>
+                                             </ul>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">🔧 Comandos de Uso</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-bash"># Desenvolvimento com hot reload (apenas frontend)
+npm run dev
+
+# Build para produção
+npm run build
+
+# Desenvolvimento completo (backend + frontend simultaneamente)
+npm run dev:full
+
+# Preview da versão de produção
+npm run preview</code></pre>
+                                 </div>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">📁 Estrutura de Arquivos Recomendada</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-text">projeto/
+├── app.js                 # Servidor Express
+├── package.json
+├── webpack.config.js      # Configuração do Webpack
+├── public/               # Arquivos fonte
+│   ├── index.html
+│   ├── produtos.html
+│   ├── css/
+│   │   └── styles.css
+│   └── js/
+│       ├── main.js
+│       └── produtos.js
+├── dist/                 # Arquivos compilados (gerado automaticamente)
+│   ├── index.html
+│   ├── produtos.html
+│   ├── main.[hash].js
+│   ├── produtos.[hash].js
+│   └── vendors.[hash].js
+└── node_modules/</code></pre>
+                                 </div>
+
+                                 <div class="bg-green-50 border-l-4 border-green-400 p-4">
+                                     <div class="flex">
+                                         <div class="flex-shrink-0">
+                                             <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                                         </div>
+                                         <div class="ml-3">
+                                             <h4 class="text-sm font-semibold text-green-900">✅ Vantagens do Webpack:</h4>
+                                             <ul class="text-sm text-green-700 mt-2 space-y-1">
+                                                 <li>• <strong>Performance:</strong> Carregamento mais rápido com bundles otimizados</li>
+                                                 <li>• <strong>Desenvolvimento:</strong> Hot reload acelera o ciclo de desenvolvimento</li>
+                                                 <li>• <strong>Produção:</strong> Arquivos minificados e otimizados</li>
+                                                 <li>• <strong>Manutenibilidade:</strong> Código modular e organizado</li>
+                                                 <li>• <strong>Escalabilidade:</strong> Fácil adição de novos recursos e páginas</li>
+                                             </ul>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </section>
+
+                         <!-- Seção 9.6: Motor de Template (EJS, Pug, Handlebars) -->
+                         <section class="bg-white rounded-lg shadow-md p-8 mb-8">
+                             <div class="section">
+                                 <h2 class="text-2xl font-bold text-gray-900 mb-6">9.6 Motor de Template (EJS, Pug, Handlebars)</h2>
+                                 <p class="text-gray-700 mb-6">
+                                     Implemente templates dinâmicos para renderizar HTML no servidor com dados do backend:
+                                 </p>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">🎨 EJS (Embedded JavaScript)</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-bash"># Instalação do EJS
+npm install ejs</code></pre>
+                                 </div>
+
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">Configuração no app.js:</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-javascript">const express = require('express');
+const path = require('path');
+const app = express();
+
+// Configurar EJS como motor de template
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Middleware para arquivos estáticos
+app.use(express.static('public'));
+app.use(express.json());
+
+// Dados simulados
+const produtos = [
+  { id: 1, nome: 'Smartphone', preco: 899.99, categoria: 'eletrônicos', estoque: 15 },
+  { id: 2, nome: 'Notebook', preco: 2499.99, categoria: 'eletrônicos', estoque: 8 },
+  { id: 3, nome: 'Tênis', preco: 199.99, categoria: 'calçados', estoque: 25 }
+];
+
+// Rota para página inicial com EJS
+app.get('/', (req, res) => {
+  res.render('index', { 
+    titulo: 'Loja Express',
+    produtos: produtos.slice(0, 3),
+    usuario: { nome: 'João', logado: true }
+  });
+});
+
+// Rota para produtos com EJS
+app.get('/produtos', (req, res) => {
+  const categoria = req.query.categoria;
+  const produtosFiltrados = categoria 
+    ? produtos.filter(p => p.categoria === categoria)
+    : produtos;
+    
+  res.render('produtos', {
+    titulo: 'Nossos Produtos',
+    produtos: produtosFiltrados,
+    categorias: ['eletrônicos', 'calçados', 'roupas'],
+    categoriaAtual: categoria || 'todas'
+  });
+});
+
+app.listen(3000, () => {
+  console.log('Servidor rodando na porta 3000');
+});</code></pre>
+                                 </div>
+
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">Template views/index.ejs:</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;&lt;%= titulo %&gt;&lt;/title&gt;
+    &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body class="bg-gray-100"&gt;
+    &lt;%- include('partials/header') %&gt;
+    
+    &lt;main class="container mx-auto px-4 py-8"&gt;
+        &lt;h1 class="text-3xl font-bold text-gray-900 mb-8"&gt;&lt;%= titulo %&gt;&lt;/h1&gt;
+        
+        &lt;% if (usuario.logado) { %&gt;
+            &lt;div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6"&gt;
+                Bem-vindo, &lt;%= usuario.nome %&gt;!
+            &lt;/div&gt;
+        &lt;% } %&gt;
+        
+        &lt;div class="grid grid-cols-1 md:grid-cols-3 gap-6"&gt;
+            &lt;% produtos.forEach(produto =&gt; { %&gt;
+                &lt;div class="bg-white rounded-lg shadow-md p-6"&gt;
+                    &lt;h3 class="text-xl font-semibold mb-2"&gt;&lt;%= produto.nome %&gt;&lt;/h3&gt;
+                    &lt;p class="text-gray-600 mb-2"&gt;Categoria: &lt;%= produto.categoria %&gt;&lt;/p&gt;
+                    &lt;p class="text-2xl font-bold text-green-600"&gt;R$ &lt;%= produto.preco.toFixed(2) %&gt;&lt;/p&gt;
+                    &lt;p class="text-sm text-gray-500"&gt;Estoque: &lt;%= produto.estoque %&gt; unidades&lt;/p&gt;
+                &lt;/div&gt;
+            &lt;% }); %&gt;
+        &lt;/div&gt;
+        
+        &lt;div class="mt-8 text-center"&gt;
+            &lt;a href="/produtos" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600"&gt;
+                Ver Todos os Produtos
+            &lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/main&gt;
+    
+    &lt;%- include('partials/footer') %&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                                 </div>
+
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">Template views/produtos.ejs:</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;&lt;%= titulo %&gt;&lt;/title&gt;
+    &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body class="bg-gray-100"&gt;
+    &lt;%- include('partials/header') %&gt;
+    
+    &lt;main class="container mx-auto px-4 py-8"&gt;
+        &lt;h1 class="text-3xl font-bold text-gray-900 mb-8"&gt;&lt;%= titulo %&gt;&lt;/h1&gt;
+        
+        &lt;!-- Filtros de Categoria --&gt;
+        &lt;div class="mb-6"&gt;
+            &lt;h3 class="text-lg font-semibold mb-3"&gt;Filtrar por categoria:&lt;/h3&gt;
+            &lt;div class="flex flex-wrap gap-2"&gt;
+                &lt;a href="/produtos" 
+                   class="px-4 py-2 rounded &lt;%= categoriaAtual === 'todas' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700' %&gt;"&gt;
+                    Todas
+                &lt;/a&gt;
+                &lt;% categorias.forEach(categoria =&gt; { %&gt;
+                    &lt;a href="/produtos?categoria=&lt;%= categoria %&gt;" 
+                       class="px-4 py-2 rounded &lt;%= categoriaAtual === categoria ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700' %&gt;"&gt;
+                        &lt;%= categoria.charAt(0).toUpperCase() + categoria.slice(1) %&gt;
+                    &lt;/a&gt;
+                &lt;% }); %&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        
+        &lt;!-- Lista de Produtos --&gt;
+        &lt;% if (produtos.length &gt; 0) { %&gt;
+            &lt;div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
+                &lt;% produtos.forEach(produto =&gt; { %&gt;
+                    &lt;div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"&gt;
+                        &lt;h3 class="text-xl font-semibold mb-2"&gt;&lt;%= produto.nome %&gt;&lt;/h3&gt;
+                        &lt;p class="text-gray-600 mb-2"&gt;Categoria: &lt;%= produto.categoria %&gt;&lt;/p&gt;
+                        &lt;p class="text-2xl font-bold text-green-600 mb-2"&gt;R$ &lt;%= produto.preco.toFixed(2) %&gt;&lt;/p&gt;
+                        &lt;p class="text-sm text-gray-500 mb-4"&gt;Estoque: &lt;%= produto.estoque %&gt; unidades&lt;/p&gt;
+                        &lt;button class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"&gt;
+                            Adicionar ao Carrinho
+                        &lt;/button&gt;
+                    &lt;/div&gt;
+                &lt;% }); %&gt;
+            &lt;/div&gt;
+        &lt;% } else { %&gt;
+            &lt;div class="text-center py-12"&gt;
+                &lt;p class="text-gray-500 text-lg"&gt;Nenhum produto encontrado nesta categoria.&lt;/p&gt;
+                &lt;a href="/produtos" class="text-blue-500 hover:underline"&gt;Ver todos os produtos&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;% } %&gt;
+    &lt;/main&gt;
+    
+    &lt;%- include('partials/footer') %&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                                 </div>
+
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">Partial views/partials/header.ejs:</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-html">&lt;header class="bg-blue-600 text-white shadow-lg"&gt;
+    &lt;nav class="container mx-auto px-4 py-4"&gt;
+        &lt;div class="flex justify-between items-center"&gt;
+            &lt;h1 class="text-2xl font-bold"&gt;
+                &lt;a href="/" class="hover:text-blue-200"&gt;Loja Express&lt;/a&gt;
+            &lt;/h1&gt;
+            &lt;ul class="flex space-x-6"&gt;
+                &lt;li&gt;&lt;a href="/" class="hover:text-blue-200"&gt;Início&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="/produtos" class="hover:text-blue-200"&gt;Produtos&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="/contato" class="hover:text-blue-200"&gt;Contato&lt;/a&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/div&gt;
+    &lt;/nav&gt;
+&lt;/header&gt;</code></pre>
+                                 </div>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">🔧 Pug (Template Engine Minimalista)</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-bash"># Instalação do Pug
+npm install pug</code></pre>
+                                 </div>
+
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">Configuração para Pug:</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-javascript">// No app.js
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));</code></pre>
+                                 </div>
+
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">Template views/produtos.pug:</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-pug">doctype html
+html(lang='pt-BR')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title= titulo
+    script(src='https://cdn.tailwindcss.com')
+  body.bg-gray-100
+    include partials/header
+    
+    main.container.mx-auto.px-4.py-8
+      h1.text-3xl.font-bold.text-gray-900.mb-8= titulo
+      
+      .mb-6
+        h3.text-lg.font-semibold.mb-3 Filtrar por categoria:
+        .flex.flex-wrap.gap-2
+          a(href='/produtos', 
+            class=categoriaAtual === 'todas' ? 'px-4 py-2 rounded bg-blue-500 text-white' : 'px-4 py-2 rounded bg-gray-200 text-gray-700') Todas
+          each categoria in categorias
+            a(href=`/produtos?categoria=${categoria}`, 
+              class=categoriaAtual === categoria ? 'px-4 py-2 rounded bg-blue-500 text-white' : 'px-4 py-2 rounded bg-gray-200 text-gray-700')= categoria.charAt(0).toUpperCase() + categoria.slice(1)
+      
+      if produtos.length > 0
+        .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-6
+          each produto in produtos
+            .bg-white.rounded-lg.shadow-md.p-6.hover:shadow-lg.transition-shadow
+              h3.text-xl.font-semibold.mb-2= produto.nome
+              p.text-gray-600.mb-2 Categoria: #{produto.categoria}
+              p.text-2xl.font-bold.text-green-600.mb-2 R$ #{produto.preco.toFixed(2)}
+              p.text-sm.text-gray-500.mb-4 Estoque: #{produto.estoque} unidades
+              button.w-full.bg-blue-500.text-white.py-2.rounded.hover:bg-blue-600 Adicionar ao Carrinho
+      else
+        .text-center.py-12
+          p.text-gray-500.text-lg Nenhum produto encontrado nesta categoria.
+          a.text-blue-500.hover:underline(href='/produtos') Ver todos os produtos
+    
+    include partials/footer</code></pre>
+                                 </div>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">🎯 Handlebars (Template Engine Lógico)</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-bash"># Instalação do Handlebars
+npm install express-handlebars</code></pre>
+                                 </div>
+
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">Configuração para Handlebars:</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-javascript">const { engine } = require('express-handlebars');
+
+// Configurar Handlebars
+app.engine('handlebars', engine({
+  defaultLayout: 'main',
+  layoutsDir: path.join(__dirname, 'views/layouts'),
+  partialsDir: path.join(__dirname, 'views/partials'),
+  helpers: {
+    eq: (a, b) => a === b,
+    formatPrice: (price) => `R$ ${price.toFixed(2)}`,
+    capitalize: (str) => str.charAt(0).toUpperCase() + str.slice(1)
+  }
+}));
+app.set('view engine', 'handlebars');</code></pre>
+                                 </div>
+
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">Layout views/layouts/main.handlebars:</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;{{titulo}}&lt;/title&gt;
+    &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body class="bg-gray-100"&gt;
+    {{&gt; header}}
+    
+    {{{body}}}
+    
+    {{&gt; footer}}
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                                 </div>
+
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">Template views/produtos.handlebars:</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-html">&lt;main class="container mx-auto px-4 py-8"&gt;
+    &lt;h1 class="text-3xl font-bold text-gray-900 mb-8"&gt;{{titulo}}&lt;/h1&gt;
+    
+    &lt;div class="mb-6"&gt;
+        &lt;h3 class="text-lg font-semibold mb-3"&gt;Filtrar por categoria:&lt;/h3&gt;
+        &lt;div class="flex flex-wrap gap-2"&gt;
+            &lt;a href="/produtos" 
+               class="px-4 py-2 rounded {{#if (eq categoriaAtual 'todas')}}bg-blue-500 text-white{{else}}bg-gray-200 text-gray-700{{/if}}"&gt;
+                Todas
+            &lt;/a&gt;
+            {{#each categorias}}
+                &lt;a href="/produtos?categoria={{this}}" 
+                   class="px-4 py-2 rounded {{#if (eq ../categoriaAtual this)}}bg-blue-500 text-white{{else}}bg-gray-200 text-gray-700{{/if}}"&gt;
+                    {{capitalize this}}
+                &lt;/a&gt;
+            {{/each}}
+        &lt;/div&gt;
+    &lt;/div&gt;
+    
+    {{#if produtos.length}}
+        &lt;div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"&gt;
+            {{#each produtos}}
+                &lt;div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"&gt;
+                    &lt;h3 class="text-xl font-semibold mb-2"&gt;{{nome}}&lt;/h3&gt;
+                    &lt;p class="text-gray-600 mb-2"&gt;Categoria: {{categoria}}&lt;/p&gt;
+                    &lt;p class="text-2xl font-bold text-green-600 mb-2"&gt;{{formatPrice preco}}&lt;/p&gt;
+                    &lt;p class="text-sm text-gray-500 mb-4"&gt;Estoque: {{estoque}} unidades&lt;/p&gt;
+                    &lt;button class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"&gt;
+                        Adicionar ao Carrinho
+                    &lt;/button&gt;
+                &lt;/div&gt;
+            {{/each}}
+        &lt;/div&gt;
+    {{else}}
+        &lt;div class="text-center py-12"&gt;
+            &lt;p class="text-gray-500 text-lg"&gt;Nenhum produto encontrado nesta categoria.&lt;/p&gt;
+            &lt;a href="/produtos" class="text-blue-500 hover:underline"&gt;Ver todos os produtos&lt;/a&gt;
+        &lt;/div&gt;
+    {{/if}}
+&lt;/main&gt;</code></pre>
+                                 </div>
+
+                                 <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                                     <div class="flex">
+                                         <div class="flex-shrink-0">
+                                             <i data-lucide="info" class="w-5 h-5 text-blue-400"></i>
+                                         </div>
+                                         <div class="ml-3">
+                                             <h4 class="text-sm font-semibold text-blue-900">📊 Comparação dos Template Engines:</h4>
+                                             <div class="text-sm text-blue-700 mt-2">
+                                                 <p><strong>EJS:</strong> Sintaxe familiar (HTML + JavaScript), fácil aprendizado</p>
+                                                 <p><strong>Pug:</strong> Sintaxe minimalista, menos código, mais limpo</p>
+                                                 <p><strong>Handlebars:</strong> Lógica separada, helpers customizados, mais estruturado</p>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <div class="bg-green-50 border-l-4 border-green-400 p-4">
+                                     <div class="flex">
+                                         <div class="flex-shrink-0">
+                                             <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                                         </div>
+                                         <div class="ml-3">
+                                             <h4 class="text-sm font-semibold text-green-900">✅ Vantagens dos Template Engines:</h4>
+                                             <ul class="text-sm text-green-700 mt-2 space-y-1">
+                                                 <li>• <strong>Renderização Server-Side:</strong> SEO otimizado e carregamento inicial mais rápido</li>
+                                                 <li>• <strong>Reutilização:</strong> Partials e layouts para código DRY</li>
+                                                 <li>• <strong>Dados Dinâmicos:</strong> Integração direta com dados do backend</li>
+                                                 <li>• <strong>Segurança:</strong> Escape automático de HTML para prevenir XSS</li>
+                                                 <li>• <strong>Performance:</strong> Cache de templates compilados</li>
+                                             </ul>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </section>
+
+                         <!-- Seção 9.7: Nodemon para Desenvolvimento -->
+                         <section class="bg-white rounded-lg shadow-md p-8 mb-8">
+                             <div class="section">
+                                 <h2 class="text-2xl font-bold text-gray-900 mb-6">9.7 Nodemon para Desenvolvimento</h2>
+                                 <p class="text-gray-700 mb-6">
+                                     Configure o Nodemon para reinicialização automática durante o desenvolvimento:
+                                 </p>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">📦 Instalação do Nodemon</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-bash"># Instalação global (recomendado para uso geral)
+npm install -g nodemon
+
+# Instalação como dependência de desenvolvimento (recomendado para projetos)
+npm install --save-dev nodemon</code></pre>
+                                 </div>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">⚙️ Configuração no package.json</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-json">{
+  "name": "express-api",
+  "version": "1.0.0",
+  "description": "API Express com Nodemon",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "dev:watch": "nodemon --watch . --ext js,json,html app.js",
+    "dev:debug": "nodemon --inspect app.js",
+    "dev:verbose": "nodemon --verbose app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}</code></pre>
+                                 </div>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">🔧 Arquivo de Configuração - nodemon.json</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-json">{
+  "watch": ["."],
+  "ext": "js,json,html,css",
+  "ignore": [
+    "node_modules",
+    "public/dist",
+    "*.test.js",
+    "coverage",
+    "logs",
+    ".git"
+  ],
+  "delay": 1000,
+  "env": {
+    "NODE_ENV": "development",
+    "DEBUG": "app:*",
+    "PORT": "3000"
+  },
+  "events": {
+    "restart": "echo 'Servidor reiniciado devido a mudanças nos arquivos'",
+    "crash": "echo 'Script crashed for some reason'",
+    "exit": "echo 'App has exited'",
+    "start": "echo 'App has started'"
+  },
+  "colours": true,
+  "legacyWatch": false,
+  "pollingInterval": 100
+}</code></pre>
+                                 </div>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">🚀 Comandos de Uso</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-bash"># Executar em modo desenvolvimento
+npm run dev
+
+# Executar com watch específico
+npm run dev:watch
+
+# Executar com debug habilitado
+npm run dev:debug
+
+# Executar com logs verbosos
+npm run dev:verbose
+
+# Executar diretamente com nodemon
+nodemon app.js
+
+# Com opções específicas
+nodemon --watch src --ext js,json app.js
+
+# Ignorar arquivos específicos
+nodemon --ignore public/ --ignore tests/ app.js</code></pre>
+                                 </div>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">🔥 Recursos Avançados</h3>
+                                 
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">1. Monitoramento Seletivo</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                     <pre><code class="language-bash"># Monitorar apenas arquivos específicos
+nodemon --watch src --watch config app.js
+
+# Monitorar extensões específicas
+nodemon --ext js,json,env app.js
+
+# Ignorar diretórios específicos
+nodemon --ignore node_modules/ --ignore logs/ app.js</code></pre>
+                                 </div>
+
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">2. Integração com Debug</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                     <pre><code class="language-bash"># Debug com Chrome DevTools
+nodemon --inspect=0.0.0.0:9229 app.js
+
+# Debug com breakpoint automático
+nodemon --inspect-brk app.js
+
+# Debug em porta específica
+nodemon --inspect=9230 app.js</code></pre>
+                                 </div>
+
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">3. Variáveis de Ambiente</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                     <pre><code class="language-bash"># Arquivo .env para desenvolvimento
+NODE_ENV=development
+PORT=3000
+DB_URL=mongodb://localhost:27017/dev
+DEBUG=app:*
+LOG_LEVEL=debug</code></pre>
+                                 </div>
+
+                                 <h4 class="text-lg font-semibold text-gray-900 mb-3">4. Scripts Personalizados</h4>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-json">{
+  "scripts": {
+    "dev:api": "nodemon --watch api api/server.js",
+    "dev:web": "nodemon --watch public --ext html,css,js --exec 'echo Arquivos web atualizados'",
+    "dev:full": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:test": "nodemon --exec \"npm test\" --watch tests --watch src"
+  }
+}</code></pre>
+                                 </div>
+
+                                 <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                                     <div class="flex">
+                                         <div class="flex-shrink-0">
+                                             <i data-lucide="zap" class="w-5 h-5 text-blue-400"></i>
+                                         </div>
+                                         <div class="ml-3">
+                                             <h4 class="text-sm font-semibold text-blue-900">⚡ Benefícios do Nodemon:</h4>
+                                             <ul class="text-sm text-blue-700 mt-2 space-y-1">
+                                                 <li>• <strong>Reinicialização Automática:</strong> Detecta mudanças e reinicia o servidor automaticamente</li>
+                                                 <li>• <strong>Produtividade:</strong> Elimina a necessidade de reiniciar manualmente durante desenvolvimento</li>
+                                                 <li>• <strong>Configuração Flexível:</strong> Permite personalizar quais arquivos monitorar</li>
+                                                 <li>• <strong>Integração com Debug:</strong> Facilita o debugging com ferramentas de desenvolvimento</li>
+                                                 <li>• <strong>Logs Informativos:</strong> Mostra quando e por que o servidor foi reiniciado</li>
+                                                 <li>• <strong>Suporte a Múltiplos Formatos:</strong> Monitora JS, JSON, HTML, CSS e outros</li>
+                                                 <li>• <strong>Performance:</strong> Otimizado para não impactar a performance do desenvolvimento</li>
+                                             </ul>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                                     <div class="flex">
+                                         <div class="flex-shrink-0">
+                                             <i data-lucide="lightbulb" class="w-5 h-5 text-green-400"></i>
+                                         </div>
+                                         <div class="ml-3">
+                                             <h4 class="text-sm font-semibold text-green-900">💡 Dicas de Uso Avançado:</h4>
+                                             <ul class="text-sm text-green-700 mt-2 space-y-1">
+                                                 <li>• Use <code>--delay</code> para evitar reinicializações muito frequentes</li>
+                                                 <li>• Configure <code>.nodemonignore</code> para arquivos que não devem ser monitorados</li>
+                                                 <li>• Use diferentes scripts para diferentes ambientes de desenvolvimento</li>
+                                                 <li>• Combine com ferramentas como ESLint para validação automática</li>
+                                                 <li>• Use <code>--exec</code> para executar comandos personalizados</li>
+                                                 <li>• Configure eventos personalizados para automação adicional</li>
+                                             </ul>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                 <h3 class="text-xl font-semibold text-gray-900 mb-4">🛠️ Exemplo Prático de Uso</h3>
+                                 <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                     <pre><code class="language-javascript">// app.js - Servidor Express com logs para demonstrar reinicialização
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Log de inicialização
+console.log('🚀 Servidor iniciando...', new Date().toLocaleTimeString());
+
+// Middleware de log
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - ${new Date().toLocaleTimeString()}`);
+  next();
+});
+
+// Rotas
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Servidor rodando com Nodemon!',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+app.get('/api/status', (req, res) => {
+  res.json({
+    status: 'online',
+    environment: process.env.NODE_ENV || 'development',
+    version: '1.0.0'
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`✅ Servidor rodando na porta ${PORT}`);
+  console.log(`🌐 Acesse: http://localhost:${PORT}`);
+});</code></pre>
+                                 </div>
+
+                                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                                     <div class="flex">
+                                         <div class="flex-shrink-0">
+                                             <i data-lucide="alert-triangle" class="w-5 h-5 text-yellow-400"></i>
+                                         </div>
+                                         <div class="ml-3">
+                                             <h4 class="text-sm font-semibold text-yellow-900">⚠️ Considerações Importantes:</h4>
+                                             <ul class="text-sm text-yellow-700 mt-2 space-y-1">
+                                                 <li>• <strong>Produção:</strong> Nunca use Nodemon em produção, apenas para desenvolvimento</li>
+                                                 <li>• <strong>Performance:</strong> Configure adequadamente os arquivos a serem ignorados</li>
+                                                 <li>• <strong>Memória:</strong> Reinicializações frequentes podem consumir mais memória</li>
+                                                 <li>• <strong>Debugging:</strong> Use <code>--inspect</code> apenas quando necessário</li>
+                                             </ul>
+                                         </div>
+                                     </div>
+                                 </div>
+                              </div>
+                          </section>
+
+                          <!-- Seção 9.8: Testes Unitários e de Integração -->
+                          <section class="bg-white rounded-lg shadow-md p-8 mb-8">
+                              <div class="section">
+                                  <h2 class="text-2xl font-bold text-gray-900 mb-6">9.8 Testes Unitários e de Integração</h2>
+                                  <p class="text-gray-700 mb-6">
+                                      Implemente testes robustos para garantir a qualidade e confiabilidade da sua API Express:
+                                  </p>
+
+                                  <h3 class="text-xl font-semibold text-gray-900 mb-4">📦 Configuração do Ambiente de Testes</h3>
+                                  <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                      <pre><code class="language-bash"># Instalação das dependências de teste
+npm install --save-dev jest supertest
+npm install --save-dev @types/jest @types/supertest # Para TypeScript
+
+# Alternativa com Mocha e Chai
+npm install --save-dev mocha chai chai-http
+npm install --save-dev @types/mocha @types/chai # Para TypeScript</code></pre>
+                                  </div>
+
+                                  <h3 class="text-xl font-semibold text-gray-900 mb-4">⚙️ Configuração do package.json</h3>
+                                  <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                      <pre><code class="language-json">{
+  "name": "express-api-tests",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:ci": "jest --ci --coverage --watchAll=false"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "**/*.{js,jsx}",
+      "!**/node_modules/**",
+      "!**/coverage/**",
+      "!**/tests/**"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.js",
+      "**/?(*.)+(spec|test).js"
+    ]
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3",
+    "nodemon": "^3.0.1"
+  }
+}</code></pre>
+                                  </div>
+
+                                  <h3 class="text-xl font-semibold text-gray-900 mb-4">🧪 Estrutura de Testes</h3>
+                                  <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                      <pre><code class="language-bash">projeto/
+├── app.js
+├── routes/
+│   ├── produtos.js
+│   └── usuarios.js
+├── middleware/
+│   ├── auth.js
+│   └── errorHandler.js
+├── models/
+│   └── produto.js
+├── utils/
+│   └── helpers.js
+└── tests/
+    ├── unit/
+    │   ├── models/
+    │   │   └── produto.test.js
+    │   ├── utils/
+    │   │   └── helpers.test.js
+    │   └── middleware/
+    │       └── auth.test.js
+    ├── integration/
+    │   ├── produtos.test.js
+    │   └── usuarios.test.js
+    ├── fixtures/
+    │   └── testData.js
+    └── setup/
+        └── testSetup.js</code></pre>
+                                  </div>
+
+                                  <h3 class="text-xl font-semibold text-gray-900 mb-4">🔧 Testes Unitários</h3>
+                                  
+                                  <h4 class="text-lg font-semibold text-gray-900 mb-3">1. Teste de Modelo (models/produto.js)</h4>
+                                  <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                      <pre><code class="language-javascript">// models/produto.js
+class Produto {
+  constructor(id, nome, preco, categoria) {
+    this.id = id;
+    this.nome = nome;
+    this.preco = preco;
+    this.categoria = categoria;
+  }
+
+  static validar(produto) {
+    const errors = [];
+    
+    if (!produto.nome || produto.nome.length < 2) {
+      errors.push('Nome deve ter pelo menos 2 caracteres');
+    }
+    
+    if (!produto.preco || produto.preco <= 0) {
+      errors.push('Preço deve ser maior que zero');
+    }
+    
+    if (!produto.categoria) {
+      errors.push('Categoria é obrigatória');
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+
+  calcularDesconto(percentual) {
+    if (percentual < 0 || percentual > 100) {
+      throw new Error('Percentual deve estar entre 0 e 100');
+    }
+    return this.preco * (1 - percentual / 100);
+  }
+}
+
+module.exports = Produto;</code></pre>
+                                  </div>
+
+                                  <h4 class="text-lg font-semibold text-gray-900 mb-3">2. Teste Unitário do Modelo</h4>
+                                  <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                      <pre><code class="language-javascript">// tests/unit/models/produto.test.js
+const Produto = require('../../../models/produto');
+
+describe('Produto Model', () => {
+  describe('Validação', () => {
+    test('deve validar produto válido', () => {
+      const produto = {
+        nome: 'Smartphone',
+        preco: 999.99,
+        categoria: 'Eletrônicos'
+      };
+      
+      const resultado = Produto.validar(produto);
+      
+      expect(resultado.isValid).toBe(true);
+      expect(resultado.errors).toHaveLength(0);
+    });
+
+    test('deve rejeitar produto com nome inválido', () => {
+      const produto = {
+        nome: 'A',
+        preco: 999.99,
+        categoria: 'Eletrônicos'
+      };
+      
+      const resultado = Produto.validar(produto);
+      
+      expect(resultado.isValid).toBe(false);
+      expect(resultado.errors).toContain('Nome deve ter pelo menos 2 caracteres');
+    });
+
+    test('deve rejeitar produto com preço inválido', () => {
+      const produto = {
+        nome: 'Smartphone',
+        preco: -10,
+        categoria: 'Eletrônicos'
+      };
+      
+      const resultado = Produto.validar(produto);
+      
+      expect(resultado.isValid).toBe(false);
+      expect(resultado.errors).toContain('Preço deve ser maior que zero');
+    });
+  });
+
+  describe('Cálculo de Desconto', () => {
+    test('deve calcular desconto corretamente', () => {
+      const produto = new Produto(1, 'Smartphone', 1000, 'Eletrônicos');
+      
+      const precoComDesconto = produto.calcularDesconto(10);
+      
+      expect(precoComDesconto).toBe(900);
+    });
+
+    test('deve lançar erro para percentual inválido', () => {
+      const produto = new Produto(1, 'Smartphone', 1000, 'Eletrônicos');
+      
+      expect(() => produto.calcularDesconto(-5)).toThrow('Percentual deve estar entre 0 e 100');
+      expect(() => produto.calcularDesconto(105)).toThrow('Percentual deve estar entre 0 e 100');
+    });
+  });
+});</code></pre>
+                                  </div>
+
+                                  <h3 class="text-xl font-semibold text-gray-900 mb-4">🌐 Testes de Integração</h3>
+                                  
+                                  <h4 class="text-lg font-semibold text-gray-900 mb-3">1. Configuração do App para Testes</h4>
+                                  <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                      <pre><code class="language-javascript">// app.js
+const express = require('express');
+const produtosRouter = require('./routes/produtos');
+const errorHandler = require('./middleware/errorHandler');
+
+const app = express();
+
+app.use(express.json());
+app.use('/api/produtos', produtosRouter);
+app.use(errorHandler);
+
+// Não iniciar o servidor se estivermos em ambiente de teste
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+  });
+}
+
+module.exports = app;</code></pre>
+                                  </div>
+
+                                  <h4 class="text-lg font-semibold text-gray-900 mb-3">2. Testes de Integração da API</h4>
+                                  <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                      <pre><code class="language-javascript">// tests/integration/produtos.test.js
+const request = require('supertest');
+const app = require('../../app');
+
+describe('API de Produtos', () => {
+  describe('GET /api/produtos', () => {
+    test('deve retornar lista de produtos', async () => {
+      const response = await request(app)
+        .get('/api/produtos')
+        .expect(200);
+      
+      expect(response.body).toHaveProperty('produtos');
+      expect(Array.isArray(response.body.produtos)).toBe(true);
+    });
+
+    test('deve retornar produtos com estrutura correta', async () => {
+      const response = await request(app)
+        .get('/api/produtos')
+        .expect(200);
+      
+      if (response.body.produtos.length > 0) {
+        const produto = response.body.produtos[0];
+        expect(produto).toHaveProperty('id');
+        expect(produto).toHaveProperty('nome');
+        expect(produto).toHaveProperty('preco');
+        expect(produto).toHaveProperty('categoria');
+      }
+    });
+  });
+
+  describe('GET /api/produtos/:id', () => {
+    test('deve retornar produto específico', async () => {
+      const response = await request(app)
+        .get('/api/produtos/1')
+        .expect(200);
+      
+      expect(response.body).toHaveProperty('produto');
+      expect(response.body.produto.id).toBe(1);
+    });
+
+    test('deve retornar 404 para produto inexistente', async () => {
+      const response = await request(app)
+        .get('/api/produtos/999')
+        .expect(404);
+      
+      expect(response.body).toHaveProperty('error');
+      expect(response.body.error).toBe('Produto não encontrado');
+    });
+  });
+
+  describe('POST /api/produtos', () => {
+    test('deve criar novo produto', async () => {
+      const novoProduto = {
+        nome: 'Tablet',
+        preco: 599.99,
+        categoria: 'Eletrônicos'
+      };
+      
+      const response = await request(app)
+        .post('/api/produtos')
+        .send(novoProduto)
+        .expect(201);
+      
+      expect(response.body).toHaveProperty('produto');
+      expect(response.body.produto.nome).toBe(novoProduto.nome);
+      expect(response.body.produto.preco).toBe(novoProduto.preco);
+    });
+
+    test('deve rejeitar produto inválido', async () => {
+      const produtoInvalido = {
+        nome: 'A',
+        preco: -10
+      };
+      
+      const response = await request(app)
+        .post('/api/produtos')
+        .send(produtoInvalido)
+        .expect(400);
+      
+      expect(response.body).toHaveProperty('errors');
+      expect(Array.isArray(response.body.errors)).toBe(true);
+    });
+  });
+
+  describe('PUT /api/produtos/:id', () => {
+    test('deve atualizar produto existente', async () => {
+      const produtoAtualizado = {
+        nome: 'Smartphone Pro',
+        preco: 1299.99,
+        categoria: 'Eletrônicos'
+      };
+      
+      const response = await request(app)
+        .put('/api/produtos/1')
+        .send(produtoAtualizado)
+        .expect(200);
+      
+      expect(response.body.produto.nome).toBe(produtoAtualizado.nome);
+    });
+  });
+
+  describe('DELETE /api/produtos/:id', () => {
+    test('deve deletar produto existente', async () => {
+      await request(app)
+        .delete('/api/produtos/1')
+        .expect(204);
+    });
+  });
+});</code></pre>
+                                  </div>
+
+                                  <h3 class="text-xl font-semibold text-gray-900 mb-4">🔧 Configuração Avançada de Testes</h3>
+                                  
+                                  <h4 class="text-lg font-semibold text-gray-900 mb-3">1. Setup de Testes</h4>
+                                  <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                      <pre><code class="language-javascript">// tests/setup/testSetup.js
+const { beforeAll, afterAll, beforeEach, afterEach } = require('@jest/globals');
+
+// Configuração global antes de todos os testes
+beforeAll(async () => {
+  process.env.NODE_ENV = 'test';
+  process.env.PORT = '0'; // Porta aleatória para testes
+  
+  // Configurar banco de dados de teste
+  // await setupTestDatabase();
+});
+
+// Limpeza após todos os testes
+afterAll(async () => {
+  // Limpar banco de dados de teste
+  // await cleanupTestDatabase();
+});
+
+// Antes de cada teste
+beforeEach(async () => {
+  // Resetar dados de teste
+  // await resetTestData();
+});
+
+// Após cada teste
+afterEach(async () => {
+  // Limpar cache ou estado
+  jest.clearAllMocks();
+});</code></pre>
+                                  </div>
+
+                                  <h4 class="text-lg font-semibold text-gray-900 mb-3">2. Fixtures de Teste</h4>
+                                  <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                      <pre><code class="language-javascript">// tests/fixtures/testData.js
+const produtosMock = [
+  {
+    id: 1,
+    nome: 'Smartphone',
+    preco: 999.99,
+    categoria: 'Eletrônicos',
+    estoque: 50
+  },
+  {
+    id: 2,
+    nome: 'Notebook',
+    preco: 2499.99,
+    categoria: 'Eletrônicos',
+    estoque: 25
+  },
+  {
+    id: 3,
+    nome: 'Livro JavaScript',
+    preco: 89.90,
+    categoria: 'Livros',
+    estoque: 100
+  }
+];
+
+const usuariosMock = [
+  {
+    id: 1,
+    nome: 'João Silva',
+    email: 'joao@email.com',
+    role: 'admin'
+  },
+  {
+    id: 2,
+    nome: 'Maria Santos',
+    email: 'maria@email.com',
+    role: 'user'
+  }
+];
+
+module.exports = {
+  produtosMock,
+  usuariosMock
+};</code></pre>
+                                  </div>
+
+                                  <h3 class="text-xl font-semibold text-gray-900 mb-4">🎯 Testes de Middleware</h3>
+                                  <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                      <pre><code class="language-javascript">// tests/unit/middleware/auth.test.js
+const authMiddleware = require('../../../middleware/auth');
+
+describe('Auth Middleware', () => {
+  let req, res, next;
+
+  beforeEach(() => {
+    req = {
+      headers: {},
+      user: null
+    };
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
+    };
+    next = jest.fn();
+  });
+
+  test('deve permitir acesso com token válido', () => {
+    req.headers.authorization = 'Bearer valid-token';
+    
+    authMiddleware(req, res, next);
+    
+    expect(next).toHaveBeenCalled();
+    expect(req.user).toBeDefined();
+  });
+
+  test('deve rejeitar acesso sem token', () => {
+    authMiddleware(req, res, next);
+    
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Token de acesso requerido'
+    });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  test('deve rejeitar token inválido', () => {
+    req.headers.authorization = 'Bearer invalid-token';
+    
+    authMiddleware(req, res, next);
+    
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Token inválido'
+    });
+  });
+});</code></pre>
+                                  </div>
+
+                                  <h3 class="text-xl font-semibold text-gray-900 mb-4">📊 Comandos de Execução</h3>
+                                  <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                      <pre><code class="language-bash"># Executar todos os testes
+npm test
+
+# Executar testes em modo watch
+npm run test:watch
+
+# Executar apenas testes unitários
+npm run test:unit
+
+# Executar apenas testes de integração
+npm run test:integration
+
+# Executar testes com cobertura
+npm run test:coverage
+
+# Executar testes para CI/CD
+npm run test:ci
+
+# Executar teste específico
+npm test -- --testNamePattern="deve validar produto"
+
+# Executar testes de arquivo específico
+npm test tests/unit/models/produto.test.js</code></pre>
+                                  </div>
+
+                                  <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                                      <div class="flex">
+                                          <div class="flex-shrink-0">
+                                              <i data-lucide="check-circle" class="w-5 h-5 text-blue-400"></i>
+                                          </div>
+                                          <div class="ml-3">
+                                              <h4 class="text-sm font-semibold text-blue-900">✅ Benefícios dos Testes:</h4>
+                                              <ul class="text-sm text-blue-700 mt-2 space-y-1">
+                                                  <li>• <strong>Confiabilidade:</strong> Garante que o código funciona conforme esperado</li>
+                                                  <li>• <strong>Refatoração Segura:</strong> Permite mudanças no código com confiança</li>
+                                                  <li>• <strong>Documentação Viva:</strong> Testes servem como documentação do comportamento</li>
+                                                  <li>• <strong>Detecção Precoce:</strong> Identifica bugs antes da produção</li>
+                                                  <li>• <strong>Cobertura de Código:</strong> Mostra quais partes do código estão testadas</li>
+                                                  <li>• <strong>Integração Contínua:</strong> Facilita automação de deploy</li>
+                                                  <li>• <strong>Qualidade:</strong> Melhora a qualidade geral do software</li>
+                                              </ul>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                                      <div class="flex">
+                                          <div class="flex-shrink-0">
+                                              <i data-lucide="target" class="w-5 h-5 text-green-400"></i>
+                                          </div>
+                                          <div class="ml-3">
+                                              <h4 class="text-sm font-semibold text-green-900">🎯 Boas Práticas de Teste:</h4>
+                                              <ul class="text-sm text-green-700 mt-2 space-y-1">
+                                                  <li>• <strong>AAA Pattern:</strong> Arrange, Act, Assert - organize seus testes</li>
+                                                  <li>• <strong>Testes Independentes:</strong> Cada teste deve ser independente dos outros</li>
+                                                  <li>• <strong>Nomes Descritivos:</strong> Use nomes que expliquem o que está sendo testado</li>
+                                                  <li>• <strong>Dados de Teste:</strong> Use fixtures e mocks para dados consistentes</li>
+                                                  <li>• <strong>Cobertura Adequada:</strong> Mire em 80-90% de cobertura de código</li>
+                                                  <li>• <strong>Testes Rápidos:</strong> Mantenha os testes unitários rápidos</li>
+                                                  <li>• <strong>Falhas Claras:</strong> Mensagens de erro devem ser informativas</li>
+                                              </ul>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                                      <div class="flex">
+                                          <div class="flex-shrink-0">
+                                              <i data-lucide="alert-triangle" class="w-5 h-5 text-yellow-400"></i>
+                                          </div>
+                                          <div class="ml-3">
+                                              <h4 class="text-sm font-semibold text-yellow-900">⚠️ Considerações Importantes:</h4>
+                                              <ul class="text-sm text-yellow-700 mt-2 space-y-1">
+                                                  <li>• <strong>Ambiente Isolado:</strong> Use banco de dados separado para testes</li>
+                                                  <li>• <strong>Cleanup:</strong> Sempre limpe dados após os testes</li>
+                                                  <li>• <strong>Mocks vs Real:</strong> Balance entre mocks e testes reais</li>
+                                                  <li>• <strong>Performance:</strong> Testes lentos desencorajam execução frequente</li>
+                                                  <li>• <strong>Manutenção:</strong> Testes também precisam ser mantidos</li>
+                                              </ul>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </section>
+                         
+                         <!-- Seção 2: O que é Express.js -->
                         <section id="o-que-e-express" class="bg-white rounded-lg shadow-md p-8">
                             <h2 class="text-2xl font-bold text-gray-900 mb-4">2. O que é Express.js?</h2>
                             
@@ -883,6 +3301,234 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Erro ao carregar categorias:', error);
     }
 });</code></pre>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Seção 9: Melhorias Avançadas -->
+                        <section class="bg-white rounded-lg shadow-md p-8">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6">9. Melhorias Avançadas do Projeto</h2>
+                            
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-6 mb-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i data-lucide="rocket" class="w-5 h-5 text-blue-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-blue-700">
+                                            <strong>Próximo Nível:</strong> Agora que você domina o básico do Express, vamos adicionar 
+                                            funcionalidades mais avançadas ao nosso projeto da padaria para torná-lo mais profissional!
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Subsection 9.1: Página de Produtos -->
+                            <div class="mb-8">
+                                <h3 class="text-xl font-semibold text-gray-900 mb-4">9.1 Criando a Página de Produtos</h3>
+                                
+                                <p class="text-gray-700 mb-4">
+                                    Vamos criar uma página dedicada para listar todos os produtos da nossa padaria. 
+                                    Atualmente, o arquivo <code class="code-inline">produtos.html</code> está vazio, vamos preenchê-lo!
+                                </p>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">📁 public/produtos.html - Página de Produtos Completa</h4>
+                                    <pre><code class="language-html"><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos - Padaria Doce Sabor</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>🥖 Padaria Doce Sabor</h1>
+        <nav>
+            <a href="/">Início</a>
+            <a href="/produtos.html" class="active">Produtos</a>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="hero">
+            <h2>Nossos Produtos</h2>
+            <p>Descubra todos os sabores frescos da nossa padaria!</p>
+        </section>
+        
+        <!-- Filtros -->
+        <section class="filtros">
+            <h3>Filtrar por Categoria</h3>
+            <div class="filtro-buttons">
+                <button class="filtro-btn active" data-categoria="todos">Todos</button>
+                <button class="filtro-btn" data-categoria="1">Pães</button>
+                <button class="filtro-btn" data-categoria="2">Doces</button>
+                <button class="filtro-btn" data-categoria="3">Salgados</button>
+            </div>
+        </section>
+        
+        <!-- Loading -->
+        <div id="loading" class="loading-container">
+            <p>Carregando produtos...</p>
+        </div>
+        
+        <!-- Lista de Produtos -->
+        <section class="produtos">
+            <div id="produtos-container" class="produtos-grid">
+                <!-- Produtos serão carregados via JavaScript -->
+            </div>
+        </section>
+        
+        <!-- Mensagem de erro -->
+        <div id="erro-container" class="erro-message" style="display: none;">
+            <p>❌ Erro ao carregar produtos. Tente novamente mais tarde.</p>
+        </div>
+    </main>
+    
+    <script src="/js/produtos.js"></script>
+</body>
+</html></code></pre>
+                                </div>
+                                
+                                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                                    <div class="flex">
+                                        <div class="flex-shrink-0">
+                                            <i data-lucide="lightbulb" class="w-5 h-5 text-yellow-400"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <h4 class="text-sm font-semibold text-yellow-900">💡 Novidades nesta página:</h4>
+                                            <ul class="text-sm text-yellow-700 mt-2 space-y-1">
+                                                <li>• <strong>Filtros por categoria:</strong> Botões para filtrar produtos</li>
+                                                <li>• <strong>Loading state:</strong> Indicador de carregamento</li>
+                                                <li>• <strong>Tratamento de erro:</strong> Mensagem quando algo dá errado</li>
+                                                <li>• <strong>Grid responsivo:</strong> Layout que se adapta ao tamanho da tela</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h4 class="text-lg font-semibold text-gray-900 mb-3">🎨 CSS Adicional para Produtos</h4>
+                                <p class="text-gray-700 mb-3">
+                                    Adicione estes estilos ao seu arquivo <code class="code-inline">public/css/style.css</code>:
+                                </p>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <pre><code class="language-css">/* Estilos para página de produtos */
+.filtros {
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.filtro-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.filtro-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid #8B4513;
+    background: white;
+    color: #8B4513;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filtro-btn:hover,
+.filtro-btn.active {
+    background: #8B4513;
+    color: white;
+}
+
+.produtos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.produto-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 3px solid #DAA520;
+}
+
+.produto-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.produto-card h4 {
+    color: #8B4513;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.produto-card .preco {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #DAA520;
+    margin: 1rem 0;
+}
+
+.produto-card .categoria {
+    background: #8B4513;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.produto-card .disponibilidade {
+    font-weight: bold;
+}
+
+.produto-card .disponivel {
+    color: #10B981;
+}
+
+.produto-card .indisponivel {
+    color: #EF4444;
+}
+
+.loading-container {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+    color: #8B4513;
+}
+
+.erro-message {
+    text-align: center;
+    padding: 2rem;
+    background: #FEE2E2;
+    border: 2px solid #EF4444;
+    border-radius: 10px;
+    margin: 2rem;
+    color: #DC2626;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .produtos-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+    
+    .filtro-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}</code></pre>
                                 </div>
                             </div>
                         </section>
