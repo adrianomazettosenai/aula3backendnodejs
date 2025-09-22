@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 3: Introdução ao Express - Backend Academy</title>
+    <meta name="description" content="Aprenda a criar seu primeiro servidor Express, compreender rotas básicas e servir arquivos estáticos.">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/styles.css">
+    
+    <!-- Prism.js para syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navegação -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="../index.html" class="text-2xl font-bold text-blue-800">Backend Academy</a>
+                    </div>
+                </div>
+                
+                <!-- Breadcrumb -->
+                <div class="hidden md:flex items-center space-x-2 text-sm text-gray-500">
+                    <a href="../index.html" class="hover:text-blue-800">Início</a>
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    <a href="../aulas.html" class="hover:text-blue-800">Aulas</a>
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    <span class="text-blue-800 font-medium">Aula 3</span>
+                </div>
+                
+                <!-- Botão Menu Mobile -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-blue-800 focus:outline-none">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Layout Principal -->
+    <div class="pt-16 min-h-screen">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="lg:grid lg:grid-cols-4 lg:gap-8">
+                <!-- Sidebar de Navegação -->
+                <div class="lg:col-span-1">
+                    <div class="sticky top-24">
+                        <!-- Progresso da Aula -->
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Progresso da Aula</h3>
+                            <div class="mb-4">
+                                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                    <span>Concluído</span>
+                                    <span id="lesson-progress">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="lesson-progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <button id="mark-complete-btn" class="btn-primary w-full text-sm py-2">
+                                Marcar como Concluída
+                            </button>
+                        </div>
+                        
+                        <!-- Navegação entre Aulas -->
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Navegação</h3>
+                            <div class="space-y-2">
+                                <a href="aula-2.html" class="flex items-center text-sm text-gray-600 hover:text-blue-800 py-2">
+                                    <i data-lucide="chevron-left" class="w-4 h-4 mr-2"></i>
+                                    Aula 2: Módulos e Sistema de Arquivos
+                                </a>
+                                <a href="aula-4.html" class="flex items-center text-sm text-gray-600 hover:text-blue-800 py-2">
+                                    Aula 4: Rotas e Middleware
+                                    <i data-lucide="chevron-right" class="w-4 h-4 ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Índice da Aula -->
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Índice</h3>
+                            <nav class="space-y-2">
+                                <a href="#introducao" class="block text-sm text-gray-600 hover:text-blue-800 py-1">1. Introdução</a>
+                                <a href="#o-que-e-express" class="block text-sm text-gray-600 hover:text-blue-800 py-1">2. O que é Express.js</a>
+                                <a href="#instalacao-configuracao" class="block text-sm text-gray-600 hover:text-blue-800 py-1">3. Instalação e Configuração</a>
+                                <a href="#primeiro-servidor" class="block text-sm text-gray-600 hover:text-blue-800 py-1">4. Primeiro Servidor</a>
+                                <a href="#rotas-basicas" class="block text-sm text-gray-600 hover:text-blue-800 py-1">5. Rotas Básicas</a>
+                                <a href="#arquivos-estaticos" class="block text-sm text-gray-600 hover:text-blue-800 py-1">6. Arquivos Estáticos</a>
+                                <a href="#middleware-basico" class="block text-sm text-gray-600 hover:text-blue-800 py-1">7. Middleware Básico</a>
+                                <a href="#projeto-aplicado" class="block text-sm text-gray-600 hover:text-blue-800 py-1">8. Projeto Aplicado</a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo Principal -->
+                <div class="lg:col-span-3 mt-8 lg:mt-0">
+                    <!-- Header da Aula -->
+                    <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="badge-iniciante">Iniciante</span>
+                            <span class="text-sm text-gray-500">3 horas</span>
+                        </div>
+                        
+                        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                            Aula 3: Introdução ao Express
+                        </h1>
+                        
+                        <p class="text-xl text-gray-600 mb-6">
+                            Aprenda a criar seu primeiro servidor Express, compreender rotas básicas e servir arquivos estáticos
+                        </p>
+                        
+                        <!-- Objetivos -->
+                        <div class="bg-blue-50 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-blue-900 mb-3">🎯 Objetivos da Aula</h3>
+                            <ul class="space-y-2 text-blue-800">
+                                <li class="flex items-start">
+                                    <i data-lucide="check" class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    Criar primeiro servidor Express
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="check" class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    Compreender rotas básicas
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="check" class="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    Servir arquivos estáticos
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Conteúdo da Aula -->
+                    <div class="space-y-8">
+                        <!-- Seção 1: Introdução Expandida -->
+                        <section id="introducao" class="bg-white rounded-lg shadow-md p-8">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">1. Introdução Completa ao Express.js</h2>
+                            
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-6 mb-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i data-lucide="lightbulb" class="w-5 h-5 text-blue-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-blue-700">
+                                            <strong>Objetivos da Aula:</strong> Aprender a criar servidores web com Express.js, 
+                                            entender rotas, middleware e como servir arquivos estáticos. Ao final desta aula, 
+                                            você será capaz de criar um servidor web completo do zero!
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 mb-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i data-lucide="info" class="w-5 h-5 text-yellow-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h4 class="text-lg font-semibold text-yellow-900 mb-2">🤔 O que é um Framework Web?</h4>
+                                        <p class="text-sm text-yellow-700 mb-3">
+                                            Imagine que você quer construir uma casa. Você poderia fazer tudo do zero: 
+                                            misturar cimento, cortar madeira, fazer a fiação elétrica... Ou você poderia 
+                                            usar materiais pré-fabricados que facilitam o trabalho.
+                                        </p>
+                                        <p class="text-sm text-yellow-700">
+                                            <strong>Express.js é como um "kit de construção" para servidores web!</strong> 
+                                            Ele fornece peças prontas (funções, métodos) que facilitam muito a criação 
+                                            de aplicações web, sem precisar programar tudo do zero.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-4">🌐 O que é Express.js?</h3>
+                            <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                                <p class="text-gray-700 mb-4">
+                                    <strong>Express.js</strong> é um framework web minimalista e flexível para Node.js que fornece 
+                                    um conjunto robusto de recursos para aplicações web e móveis. Ele é como uma "caixa de ferramentas" 
+                                    que torna muito mais fácil criar servidores web.
+                                </p>
+                                
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="bg-white rounded-lg p-4 border">
+                                        <h4 class="font-semibold text-gray-900 mb-2">🔧 Sem Express (Node.js puro)</h4>
+                                        <ul class="text-sm text-gray-600 space-y-1">
+                                            <li>• Muito código para tarefas simples</li>
+                                            <li>• Difícil de organizar</li>
+                                            <li>• Muita repetição</li>
+                                            <li>• Mais propenso a erros</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-4 border">
+                                        <h4 class="font-semibold text-gray-900 mb-2">⚡ Com Express</h4>
+                                        <ul class="text-sm text-gray-600 space-y-1">
+                                            <li>• Código limpo e organizado</li>
+                                            <li>• Funcionalidades prontas</li>
+                                            <li>• Fácil de entender</li>
+                                            <li>• Desenvolvimento mais rápido</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-4">
+                                Agora que você já domina os fundamentos do Node.js e o sistema de módulos, é hora de dar o próximo passo: 
+                                criar aplicações web! O Express.js é o framework web mais popular para Node.js.
+                            </p>
+                            <p class="text-gray-700 mb-6">
+                                Com Express, você pode criar APIs robustas, aplicações web completas e microserviços de forma 
+                                rápida e eficiente.
+                            </p>
+                            
+                            <div class="bg-green-50 border-l-4 border-green-400 p-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i data-lucide="star" class="w-5 h-5 text-green-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h4 class="text-lg font-semibold text-green-900 mb-2">💡 Curiosidade</h4>
+                                        <p class="text-sm text-green-700">
+                                            Express.js é usado por empresas gigantes como <strong>Netflix, Uber, WhatsApp, IBM</strong> e muitas outras! 
+                                            Aprender Express é uma habilidade muito valorizada no mercado de trabalho.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Seção 2: O que é Express.js -->
+                        <section id="o-que-e-express" class="bg-white rounded-lg shadow-md p-8">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">2. O que é Express.js?</h2>
+                            
+                            <div class="bg-green-50 border-l-4 border-green-400 p-6 mb-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i data-lucide="info" class="w-5 h-5 text-green-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-green-700">
+                                            <strong>Definição:</strong> Express.js é um framework web minimalista, rápido e flexível 
+                                            para Node.js que fornece um conjunto robusto de recursos para aplicações web e mobile.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Principais Características:</h3>
+                            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                                <div class="space-y-3">
+                                    <div class="flex items-start">
+                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-3 mt-1">Minimalista</span>
+                                        Framework leve e não opinativo
+                                    </div>
+                                    <div class="flex items-start">
+                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-3 mt-1">Flexível</span>
+                                        Permite diferentes arquiteturas
+                                    </div>
+                                    <div class="flex items-start">
+                                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded mr-3 mt-1">Rápido</span>
+                                        Performance otimizada
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-start">
+                                        <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded mr-3 mt-1">Middleware</span>
+                                        Sistema de middleware poderoso
+                                    </div>
+                                    <div class="flex items-start">
+                                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded mr-3 mt-1">Roteamento</span>
+                                        Sistema de rotas avançado
+                                    </div>
+                                    <div class="flex items-start">
+                                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded mr-3 mt-1">Templating</span>
+                                        Suporte a engines de template
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Por que usar Express?</h3>
+                            <ul class="space-y-2 text-gray-700">
+                                <li class="flex items-start">
+                                    <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    Simplifica o desenvolvimento de aplicações web
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    Grande ecossistema de middleware
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    Comunidade ativa e documentação excelente
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                    Usado por grandes empresas (Netflix, Uber, WhatsApp)
+                                </li>
+                            </ul>
+                        </section>
+                        
+                        <!-- Seção 3: Instalação e Configuração -->
+                        <section id="instalacao-configuracao" class="bg-white rounded-lg shadow-md p-8">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">3. Instalação e Configuração</h2>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Passo 1: Inicializar o Projeto</h3>
+                            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                <pre><code class="language-bash"># Criar diretório do projeto
+mkdir meu-primeiro-express
+cd meu-primeiro-express
+
+# Inicializar package.json
+npm init -y</code></pre>
+                            </div>
+                            
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i data-lucide="alert-triangle" class="w-5 h-5 text-yellow-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-yellow-700">
+                                            <strong>Nota para usuários Windows:</strong> Se estiver usando PowerShell, execute os comandos separadamente. 
+                                            O operador <code>&&</code> não é suportado no PowerShell. Execute cada comando em uma linha separada.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Passo 2: Instalar Express</h3>
+                            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                <pre><code class="language-bash"># Instalar Express
+npm install express
+
+# Instalar nodemon para desenvolvimento (opcional)
+npm install --save-dev nodemon</code></pre>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Passo 3: Configurar Scripts</h3>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <pre><code class="language-json">// package.json
+{
+  "name": "meu-primeiro-express",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}</code></pre>
+                            </div>
+                        </section>
+                        
+                        <!-- Seção 4: Primeiro Servidor -->
+                        <section id="primeiro-servidor" class="bg-white rounded-lg shadow-md p-8">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">4. Criando seu Primeiro Servidor</h2>
+                            
+                            <p class="text-gray-700 mb-6">
+                                Vamos criar um servidor Express básico que responde "Hello World!" na rota principal.
+                            </p>
+                            
+                            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                <h4 class="font-medium text-gray-900 mb-2">app.js - Servidor Básico</h4>
+                                <pre><code class="language-javascript">// Importar o Express
+const express = require('express');
+
+// Criar uma instância do Express
+const app = express();
+
+// Definir a porta
+const PORT = process.env.PORT || 3000;
+
+// Rota básica
+app.get('/', (req, res) => {
+    res.send('Hello World! Meu primeiro servidor Express!');
+});
+
+// Iniciar o servidor
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`Acesse: http://localhost:${PORT}`);
+});</code></pre>
+                            </div>
+                            
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-6 mb-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i data-lucide="play" class="w-5 h-5 text-blue-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-blue-700">
+                                            <strong>Para executar:</strong> Execute <code>npm run dev</code> no terminal e acesse 
+                                            <code>http://localhost:3000</code> no seu navegador.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Entendendo o Código:</h3>
+                            <div class="space-y-4">
+                                <div class="bg-yellow-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-yellow-900 mb-2">1. Importação e Instância</h4>
+                                    <pre><code class="language-javascript">const express = require('express');
+const app = express();</code></pre>
+                                    <p class="text-sm text-yellow-800 mt-2">
+                                        Importamos o Express e criamos uma instância da aplicação.
+                                    </p>
+                                </div>
+                                
+                                <div class="bg-green-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-green-900 mb-2">2. Definição de Rota</h4>
+                                    <pre><code class="language-javascript">app.get('/', (req, res) => {
+    res.send('Hello World!');
+});</code></pre>
+                                    <p class="text-sm text-green-800 mt-2">
+                                        Definimos uma rota GET para o caminho raiz ('/') que responde com uma mensagem.
+                                    </p>
+                                </div>
+                                
+                                <div class="bg-purple-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-purple-900 mb-2">3. Inicialização do Servidor</h4>
+                                    <pre><code class="language-javascript">app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+});</code></pre>
+                                    <p class="text-sm text-purple-800 mt-2">
+                                        Iniciamos o servidor na porta especificada e exibimos uma mensagem de confirmação.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Seção 5: Rotas Básicas -->
+                        <section id="rotas-basicas" class="bg-white rounded-lg shadow-md p-8">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">5. Rotas Básicas e Métodos HTTP</h2>
+                            
+                            <p class="text-gray-700 mb-6">
+                                As rotas determinam como uma aplicação responde a uma requisição do cliente para um endpoint específico, 
+                                que é definido por um caminho e um método HTTP específico.
+                            </p>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Principais Métodos HTTP:</h3>
+                            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                                <div class="space-y-3">
+                                    <div class="flex items-center">
+                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-3">GET</span>
+                                        <span class="text-gray-700">Buscar dados</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-3">POST</span>
+                                        <span class="text-gray-700">Criar novos dados</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex items-center">
+                                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded mr-3">PUT</span>
+                                        <span class="text-gray-700">Atualizar dados</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded mr-3">DELETE</span>
+                                        <span class="text-gray-700">Remover dados</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exemplos de Rotas:</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">Rotas GET</h4>
+                                    <pre><code class="language-javascript">// Rota principal
+app.get('/', (req, res) => {
+    res.send('Página inicial');
+});
+
+// Rota sobre
+app.get('/sobre', (req, res) => {
+    res.send('Página sobre nós');
+});
+
+// Rota com parâmetro
+app.get('/usuario/:id', (req, res) => {
+    const userId = req.params.id;
+    res.send(`Perfil do usuário ${userId}`);
+});
+
+// Rota com query parameters
+app.get('/buscar', (req, res) => {
+    const termo = req.query.q;
+    res.send(`Buscando por: ${termo}`);
+});</code></pre>
+                                </div>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">Rotas POST</h4>
+                                    <pre><code class="language-javascript">// Middleware para parsing de JSON
+app.use(express.json());
+
+// Rota POST para criar usuário
+app.post('/usuarios', (req, res) => {
+    const { nome, email } = req.body;
+    
+    // Aqui você salvaria no banco de dados
+    const novoUsuario = {
+        id: Date.now(),
+        nome,
+        email,
+        criadoEm: new Date()
+    };
+    
+    res.status(201).json({
+        message: 'Usuário criado com sucesso!',
+        usuario: novoUsuario
+    });
+});</code></pre>
+                                </div>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">Rotas PUT e DELETE</h4>
+                                    <pre><code class="language-javascript">// Atualizar usuário
+app.put('/usuarios/:id', (req, res) => {
+    const userId = req.params.id;
+    const { nome, email } = req.body;
+    
+    res.json({
+        message: `Usuário ${userId} atualizado`,
+        dados: { nome, email }
+    });
+});
+
+// Deletar usuário
+app.delete('/usuarios/:id', (req, res) => {
+    const userId = req.params.id;
+    
+    res.json({
+        message: `Usuário ${userId} removido com sucesso`
+    });
+});</code></pre>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Seção 6: Arquivos Estáticos -->
+                        <section id="arquivos-estaticos" class="bg-white rounded-lg shadow-md p-8">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">6. Servindo Arquivos Estáticos</h2>
+                            
+                            <p class="text-gray-700 mb-6">
+                                O Express pode servir arquivos estáticos como HTML, CSS, JavaScript, imagens, etc. 
+                                usando o middleware <code>express.static</code>.
+                            </p>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Configuração Básica:</h3>
+                            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                <pre><code class="language-javascript">// Servir arquivos estáticos da pasta 'public'
+app.use(express.static('public'));
+
+// Ou com um prefixo virtual
+app.use('/static', express.static('public'));</code></pre>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Estrutura de Pastas:</h3>
+                            <div class="bg-yellow-50 rounded-lg p-4 mb-6">
+                                <pre><code class="language-text">projeto/
+├── app.js
+├── package.json
+└── public/
+    ├── index.html
+    ├── css/
+    │   └── style.css
+    ├── js/
+    │   └── script.js
+    └── images/
+        └── logo.png</code></pre>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exemplo Completo:</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">app.js</h4>
+                                    <pre><code class="language-javascript">const express = require('express');
+const path = require('path');
+const app = express();
+
+// Servir arquivos estáticos
+app.use(express.static('public'));
+
+// Rota para página inicial
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.listen(3000, () => {
+    console.log('Servidor rodando na porta 3000');
+});</code></pre>
+                                </div>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">public/index.html</h4>
+                                    <pre><code class="language-html"><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Site Express</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>Bem-vindo ao Express!</h1>
+    <p>Este é um arquivo HTML estático servido pelo Express.</p>
+    <script src="/js/script.js"></script>
+</body>
+</html></code></pre>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Seção 7: Middleware Básico -->
+                        <section id="middleware-basico" class="bg-white rounded-lg shadow-md p-8">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">7. Middleware Básico</h2>
+                            
+                            <div class="bg-green-50 border-l-4 border-green-400 p-6 mb-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i data-lucide="info" class="w-5 h-5 text-green-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-green-700">
+                                            <strong>Middleware:</strong> Funções que têm acesso ao objeto de requisição (req), 
+                                            ao objeto de resposta (res) e à próxima função middleware no ciclo de requisição-resposta.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Tipos de Middleware:</h3>
+                            <ul class="space-y-2 text-gray-700 mb-6">
+                                <li class="flex items-start">
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-3 mt-1">Application-level</span>
+                                    Aplicado a toda a aplicação
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-3 mt-1">Router-level</span>
+                                    Aplicado a rotas específicas
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded mr-3 mt-1">Built-in</span>
+                                    Middleware nativo do Express
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded mr-3 mt-1">Third-party</span>
+                                    Middleware de terceiros
+                                </li>
+                            </ul>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">Exemplos de Middleware:</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">Middleware de Logging</h4>
+                                    <pre><code class="language-javascript">// Middleware personalizado para logging
+const logger = (req, res, next) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${req.method} ${req.url}`);
+    next(); // Chama o próximo middleware
+};
+
+// Usar o middleware
+app.use(logger);</code></pre>
+                                </div>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">Middleware Built-in</h4>
+                                    <pre><code class="language-javascript">// Middleware para parsing de JSON
+app.use(express.json());
+
+// Middleware para parsing de URL-encoded
+app.use(express.urlencoded({ extended: true }));
+
+// Middleware para arquivos estáticos
+app.use(express.static('public'));</code></pre>
+                                </div>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">Middleware de Erro</h4>
+                                    <pre><code class="language-javascript">// Middleware de tratamento de erro (sempre por último)
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        error: 'Algo deu errado!',
+        message: err.message
+    });
+});
+
+// Middleware para rotas não encontradas
+app.use('*', (req, res) => {
+    res.status(404).json({
+        error: 'Rota não encontrada',
+        path: req.originalUrl
+    });
+});</code></pre>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Seção 8: Projeto Aplicado -->
+                        <section id="projeto-aplicado" class="bg-white rounded-lg shadow-md p-8">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">8. Projeto Aplicado: Servidor da Padaria</h2>
+                            
+                            <p class="text-gray-700 mb-6">
+                                Vamos criar o servidor básico para o projeto da Padaria Doce Sabor, implementando 
+                                as rotas iniciais e servindo arquivos estáticos.
+                            </p>
+                            
+                            <div class="bg-yellow-50 rounded-lg p-6 mb-6">
+                                <h3 class="text-lg font-semibold text-yellow-900 mb-3">🏗️ Estrutura do Projeto</h3>
+                                <pre><code class="language-text">padaria-doce-sabor/
+├── app.js
+├── package.json
+├── public/
+│   ├── index.html
+│   ├── produtos.html
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   └── main.js
+│   └── images/
+└── routes/
+    ├── produtos.js
+    └── categorias.js</code></pre>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">app.js - Servidor Principal</h4>
+                                    <pre><code class="language-javascript">const express = require('express');
+const path = require('path');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+
+// Middleware de logging
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
+});
+
+// Rotas principais
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/produtos', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'produtos.html'));
+});
+
+// API Routes
+app.get('/api/produtos', (req, res) => {
+    // Dados mockados por enquanto
+    const produtos = [
+        {
+            id: 1,
+            nome: 'Pão Francês',
+            preco: 0.50,
+            categoria: 'Pães',
+            disponivel: true
+        },
+        {
+            id: 2,
+            nome: 'Croissant',
+            preco: 3.50,
+            categoria: 'Doces',
+            disponivel: true
+        },
+        {
+            id: 3,
+            nome: 'Coxinha',
+            preco: 4.00,
+            categoria: 'Salgados',
+            disponivel: true
+        }
+    ];
+    
+    res.json(produtos);
+});
+
+app.get('/api/categorias', (req, res) => {
+    const categorias = [
+        { id: 1, nome: 'Pães', descricao: 'Pães frescos e quentinhos' },
+        { id: 2, nome: 'Doces', descricao: 'Doces e sobremesas deliciosas' },
+        { id: 3, nome: 'Salgados', descricao: 'Salgados assados e fritos' }
+    ];
+    
+    res.json(categorias);
+});
+
+// Middleware de erro 404
+app.use('*', (req, res) => {
+    res.status(404).json({
+        error: 'Página não encontrada',
+        path: req.originalUrl
+    });
+});
+
+// Iniciar servidor
+app.listen(PORT, () => {
+    console.log(`🥖 Servidor da Padaria Doce Sabor rodando na porta ${PORT}`);
+    console.log(`🌐 Acesse: http://localhost:${PORT}`);
+});</code></pre>
+                                </div>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">public/index.html - Página Principal</h4>
+                                    <pre><code class="language-html"><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Padaria Doce Sabor</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>🥖 Padaria Doce Sabor</h1>
+        <nav>
+            <a href="/">Início</a>
+            <a href="/produtos">Produtos</a>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="hero">
+            <h2>Bem-vindos à nossa padaria!</h2>
+            <p>Produtos frescos e deliciosos todos os dias.</p>
+        </section>
+        
+        <section class="categorias">
+            <h3>Nossas Categorias</h3>
+            <div id="categorias-container">
+                <!-- Categorias serão carregadas via JavaScript -->
+            </div>
+        </section>
+    </main>
+</body>
+</html></code></pre>
+                                </div>
+                                
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-gray-900 mb-2">public/js/main.js - JavaScript Frontend</h4>
+                                    <pre><code class="language-javascript">// Carregar categorias quando a página carregar
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const response = await fetch('/api/categorias');
+        const categorias = await response.json();
+        
+        const container = document.getElementById('categorias-container');
+        
+        categorias.forEach(categoria => {
+            const div = document.createElement('div');
+            div.className = 'categoria-card';
+            div.innerHTML = `
+                <h4>${categoria.nome}</h4>
+                <p>${categoria.descricao}</p>
+            `;
+            container.appendChild(div);
+        });
+    } catch (error) {
+        console.error('Erro ao carregar categorias:', error);
+    }
+});</code></pre>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Resumo e Próximos Passos -->
+                        <section class="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-8">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">📚 Resumo da Aula</h2>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-3">O que você aprendeu:</h3>
+                                    <ul class="space-y-2 text-gray-700">
+                                        <li class="flex items-start">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                            O que é Express.js e suas características
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                            Como criar um servidor Express básico
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                            Rotas e métodos HTTP (GET, POST, PUT, DELETE)
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                            Servir arquivos estáticos
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"></i>
+                                            Conceitos básicos de middleware
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Próxima aula:</h3>
+                                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                                        <h4 class="font-medium text-gray-900">Aula 4: Rotas e Middleware</h4>
+                                        <p class="text-sm text-gray-600 mt-1">
+                                            Aprenda a organizar rotas em módulos e criar middleware personalizado
+                                        </p>
+                                        <a href="aula-4.html" class="inline-flex items-center mt-3 text-blue-600 hover:text-blue-800">
+                                            Ir para próxima aula
+                                            <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Inicializar ícones Lucide
+        lucide.createIcons();
+        
+        // Funcionalidade específica da aula
+        document.addEventListener('DOMContentLoaded', function() {
+            // Progresso baseado em scroll
+            const sections = document.querySelectorAll('section');
+            const progressBar = document.getElementById('lesson-progress-bar');
+            const progressText = document.getElementById('lesson-progress');
+            
+            function updateProgress() {
+                const scrollTop = window.pageYOffset;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = (scrollTop / docHeight) * 100;
+                
+                progressBar.style.width = Math.min(scrollPercent, 100) + '%';
+                progressText.textContent = Math.round(Math.min(scrollPercent, 100)) + '%';
+            }
+            
+            window.addEventListener('scroll', updateProgress);
+            
+            // Marcar como concluída
+            document.getElementById('mark-complete-btn').addEventListener('click', function() {
+                localStorage.setItem('aula-3-completed', 'true');
+                this.textContent = 'Aula Concluída ✓';
+                this.classList.add('bg-green-600');
+                
+                // Mostrar notificação
+                showNotification('Aula 3 marcada como concluída!', 'success');
+            });
+            
+            // Verificar se já foi concluída
+            if (localStorage.getItem('aula-3-completed') === 'true') {
+                const btn = document.getElementById('mark-complete-btn');
+                btn.textContent = 'Aula Concluída ✓';
+                btn.classList.add('bg-green-600');
+            }
+            
+            // Re-executar Prism para garantir syntax highlighting
+            if (typeof Prism !== 'undefined') {
+                Prism.highlightAll();
+            }
+        });
+    </script>
+</body>
+</html>
