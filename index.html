@@ -137,13 +137,31 @@
                                 </li>
                             </ul>
                         </div>
+                        
+                        <!-- Legenda das Etiquetas -->
+                        <div class="bg-gradient-to-r from-green-50 to-blue-50 border border-gray-200 p-6 rounded-lg mt-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">📋 Legenda das Atividades</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex items-center space-x-3">
+                                    <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">🔨 CÓDIGO PRÁTICO</span>
+                                    <span class="text-gray-700">Atividades para implementar e praticar</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">📖 EXEMPLO TEÓRICO</span>
+                                    <span class="text-gray-700">Conceitos e exemplos para estudo</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Conteúdo da Aula -->
                     <div class="space-y-8">
-                        <!-- Seção 1: Introdução Expandida -->
+                        <!-- PASSO 1: Introdução Expandida -->
                         <section id="introducao" class="bg-white rounded-lg shadow-md p-8">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-4">1. Introdução Completa ao Express.js</h2>
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold mr-3">📖 EXEMPLO TEÓRICO</span>
+                                <h2 class="text-2xl font-bold text-gray-900">PASSO 1: Introdução Completa ao Express.js</h2>
+                            </div>
                             
                             <div class="bg-blue-50 border-l-4 border-blue-400 p-6 mb-6">
                                 <div class="flex">
@@ -2654,9 +2672,13 @@ npm test tests/unit/models/produto.test.js</code></pre>
                               </div>
                           </section>
                          
-                         <!-- Seção 2: O que é Express.js -->
+                         <!-- PASSO 2: O que é Express.js -->
                         <section id="o-que-e-express" class="bg-white rounded-lg shadow-md p-8">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-4">2. O que é Express.js?</h2>
+                            <div class="flex items-center mb-6">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mr-3">PASSO 2</span>
+                                <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full mr-3">📖 EXEMPLO TEÓRICO</span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">O que é Express.js?</h2>
                             
                             <div class="bg-green-50 border-l-4 border-green-400 p-6 mb-6">
                                 <div class="flex">
@@ -2725,9 +2747,13 @@ npm test tests/unit/models/produto.test.js</code></pre>
                             </ul>
                         </section>
                         
-                        <!-- Seção 3: Instalação e Configuração -->
+                        <!-- PASSO 3: Instalação e Configuração -->
                         <section id="instalacao-configuracao" class="bg-white rounded-lg shadow-md p-8">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-4">3. Instalação e Configuração</h2>
+                            <div class="flex items-center mb-6">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mr-3">PASSO 3</span>
+                                <span class="bg-orange-100 text-orange-800 text-sm font-medium px-3 py-1 rounded-full mr-3">🔨 CÓDIGO PRÁTICO</span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">Instalação e Configuração</h2>
                             
                             <h3 class="text-xl font-semibold text-gray-900 mb-3">Passo 1: Inicializar o Projeto</h3>
                             <div class="bg-gray-50 rounded-lg p-4 mb-4">
@@ -2784,9 +2810,13 @@ npm install --save-dev nodemon</code></pre>
                             </div>
                         </section>
                         
-                        <!-- Seção 4: Primeiro Servidor -->
+                        <!-- PASSO 4: Primeiro Servidor -->
                         <section id="primeiro-servidor" class="bg-white rounded-lg shadow-md p-8">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-4">4. Criando seu Primeiro Servidor</h2>
+                            <div class="flex items-center mb-6">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mr-3">PASSO 4</span>
+                                <span class="bg-orange-100 text-orange-800 text-sm font-medium px-3 py-1 rounded-full mr-3">🔨 CÓDIGO PRÁTICO</span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">Criando seu Primeiro Servidor</h2>
                             
                             <p class="text-gray-700 mb-6">
                                 Vamos criar um servidor Express básico que responde "Hello World!" na rota principal.
@@ -2862,9 +2892,13 @@ const app = express();</code></pre>
                             </div>
                         </section>
                         
-                        <!-- Seção 5: Rotas Básicas -->
+                        <!-- PASSO 5: Rotas Básicas -->
                         <section id="rotas-basicas" class="bg-white rounded-lg shadow-md p-8">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-4">5. Rotas Básicas e Métodos HTTP</h2>
+                            <div class="flex items-center mb-6">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mr-3">PASSO 5</span>
+                                <span class="bg-orange-100 text-orange-800 text-sm font-medium px-3 py-1 rounded-full mr-3">🔨 CÓDIGO PRÁTICO</span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">Rotas Básicas e Métodos HTTP</h2>
                             
                             <p class="text-gray-700 mb-6">
                                 As rotas determinam como uma aplicação responde a uma requisição do cliente para um endpoint específico, 
@@ -2971,9 +3005,13 @@ app.delete('/usuarios/:id', (req, res) => {
                             </div>
                         </section>
                         
-                        <!-- Seção 6: Arquivos Estáticos -->
+                        <!-- PASSO 6: Arquivos Estáticos -->
                         <section id="arquivos-estaticos" class="bg-white rounded-lg shadow-md p-8">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-4">6. Servindo Arquivos Estáticos</h2>
+                            <div class="flex items-center mb-6">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mr-3">PASSO 6</span>
+                                <span class="bg-orange-100 text-orange-800 text-sm font-medium px-3 py-1 rounded-full mr-3">🔨 CÓDIGO PRÁTICO</span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">Servindo Arquivos Estáticos</h2>
                             
                             <p class="text-gray-700 mb-6">
                                 O Express pode servir arquivos estáticos como HTML, CSS, JavaScript, imagens, etc. 
@@ -3045,9 +3083,13 @@ app.listen(3000, () => {
                             </div>
                         </section>
                         
-                        <!-- Seção 7: Middleware Básico -->
+                        <!-- PASSO 7: Middleware Básico -->
                         <section id="middleware-basico" class="bg-white rounded-lg shadow-md p-8">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-4">7. Middleware Básico</h2>
+                            <div class="flex items-center mb-6">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mr-3">PASSO 7</span>
+                                <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full mr-3">📖 EXEMPLO TEÓRICO</span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">Middleware Básico</h2>
                             
                             <div class="bg-green-50 border-l-4 border-green-400 p-6 mb-6">
                                 <div class="flex">
@@ -3132,9 +3174,13 @@ app.use('*', (req, res) => {
                             </div>
                         </section>
                         
-                        <!-- Seção 8: Projeto Aplicado -->
+                        <!-- PASSO 8: Projeto Aplicado -->
                         <section id="projeto-aplicado" class="bg-white rounded-lg shadow-md p-8">
-                            <h2 class="text-2xl font-bold text-gray-900 mb-4">8. Projeto Aplicado: Servidor da Padaria</h2>
+                            <div class="flex items-center mb-6">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mr-3">PASSO 8</span>
+                                <span class="bg-orange-100 text-orange-800 text-sm font-medium px-3 py-1 rounded-full mr-3">🔨 CÓDIGO PRÁTICO</span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">Projeto Aplicado: Servidor da Padaria</h2>
                             
                             <p class="text-gray-700 mb-6">
                                 Vamos criar o servidor básico para o projeto da Padaria Doce Sabor, implementando 
@@ -3529,6 +3575,229 @@ document.addEventListener('DOMContentLoaded', async () => {
         align-items: center;
     }
 }</code></pre>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- PASSO 9: Testando APIs com Thunder Client -->
+                        <section id="thunder-client-tests" class="bg-white rounded-lg shadow-md p-8">
+                            <div class="flex items-center mb-6">
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mr-3">PASSO 9</span>
+                                <span class="bg-orange-100 text-orange-800 text-sm font-medium px-3 py-1 rounded-full mr-3">🔨 CÓDIGO PRÁTICO</span>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-4">Testando APIs com Thunder Client</h2>
+                            
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-6 mb-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i data-lucide="zap" class="w-5 h-5 text-blue-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-blue-700">
+                                            <strong>Thunder Client:</strong> Extensão do VS Code que permite testar APIs REST 
+                                            diretamente no editor, similar ao Postman mas integrado ao VS Code.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">1. Instalação do Thunder Client</h3>
+                            <div class="bg-yellow-50 rounded-lg p-4 mb-6">
+                                <h4 class="font-medium text-yellow-900 mb-2">📦 Como instalar:</h4>
+                                <ol class="list-decimal list-inside space-y-2 text-yellow-800">
+                                    <li>Abra o VS Code</li>
+                                    <li>Vá em Extensions (Ctrl+Shift+X)</li>
+                                    <li>Pesquise por "Thunder Client"</li>
+                                    <li>Clique em "Install" na extensão do Ranga Vadhineni</li>
+                                    <li>Após instalação, aparecerá um ícone de raio na barra lateral</li>
+                                </ol>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3">2. Testando Rotas de Produtos</h3>
+                            <p class="text-gray-700 mb-4">
+                                Vamos testar todas as rotas da API de produtos usando os métodos HTTP principais.
+                                <strong>Certifique-se de que seu servidor Express esteja rodando na porta 3000!</strong>
+                            </p>
+                            
+                            <div class="space-y-6">
+                                <!-- Teste GET -->
+                                <div class="bg-green-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-green-900 mb-3 flex items-center">
+                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-3">GET</span>
+                                        Buscar Todos os Produtos
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <strong>URL:</strong> <code class="bg-gray-100 px-2 py-1 rounded">http://localhost:3000/api/produtos</code>
+                                        </div>
+                                        <div>
+                                            <strong>Método:</strong> GET
+                                        </div>
+                                        <div>
+                                            <strong>Headers:</strong> Nenhum necessário
+                                        </div>
+                                        <div>
+                                            <strong>Body:</strong> Nenhum
+                                        </div>
+                                        <div class="bg-white p-3 rounded border">
+                                            <strong>Resposta esperada:</strong>
+                                            <pre><code class="language-json">[
+  {
+    "id": 1,
+    "nome": "Pão Francês",
+    "preco": 0.50,
+    "categoria": "Pães",
+    "disponivel": true
+  },
+  {
+    "id": 2,
+    "nome": "Croissant",
+    "preco": 3.50,
+    "categoria": "Doces",
+    "disponivel": true
+  }
+]</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Teste GET por ID -->
+                                <div class="bg-green-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-green-900 mb-3 flex items-center">
+                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded mr-3">GET</span>
+                                        Buscar Produto por ID
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <strong>URL:</strong> <code class="bg-gray-100 px-2 py-1 rounded">http://localhost:3000/api/produtos/1</code>
+                                        </div>
+                                        <div>
+                                            <strong>Método:</strong> GET
+                                        </div>
+                                        <div>
+                                            <strong>Headers:</strong> Nenhum necessário
+                                        </div>
+                                        <div>
+                                            <strong>Body:</strong> Nenhum
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Teste POST -->
+                                <div class="bg-blue-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-blue-900 mb-3 flex items-center">
+                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-3">POST</span>
+                                        Criar Novo Produto
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <strong>URL:</strong> <code class="bg-gray-100 px-2 py-1 rounded">http://localhost:3000/api/produtos</code>
+                                        </div>
+                                        <div>
+                                            <strong>Método:</strong> POST
+                                        </div>
+                                        <div>
+                                            <strong>Headers:</strong>
+                                            <div class="bg-white p-2 rounded border mt-1">
+                                                <code>Content-Type: application/json</code>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <strong>Body (JSON):</strong>
+                                            <div class="bg-white p-3 rounded border mt-1">
+                                                <pre><code class="language-json">{
+  "nome": "Brigadeiro",
+  "preco": 2.50,
+  "categoria": "Doces",
+  "disponivel": true
+}</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Teste PUT -->
+                                <div class="bg-yellow-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-yellow-900 mb-3 flex items-center">
+                                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded mr-3">PUT</span>
+                                        Atualizar Produto
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <strong>URL:</strong> <code class="bg-gray-100 px-2 py-1 rounded">http://localhost:3000/api/produtos/1</code>
+                                        </div>
+                                        <div>
+                                            <strong>Método:</strong> PUT
+                                        </div>
+                                        <div>
+                                            <strong>Headers:</strong>
+                                            <div class="bg-white p-2 rounded border mt-1">
+                                                <code>Content-Type: application/json</code>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <strong>Body (JSON):</strong>
+                                            <div class="bg-white p-3 rounded border mt-1">
+                                                <pre><code class="language-json">{
+  "nome": "Pão Francês Premium",
+  "preco": 0.75,
+  "categoria": "Pães",
+  "disponivel": true
+}</code></pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Teste DELETE -->
+                                <div class="bg-red-50 rounded-lg p-4">
+                                    <h4 class="font-medium text-red-900 mb-3 flex items-center">
+                                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded mr-3">DELETE</span>
+                                        Deletar Produto
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <strong>URL:</strong> <code class="bg-gray-100 px-2 py-1 rounded">http://localhost:3000/api/produtos/3</code>
+                                        </div>
+                                        <div>
+                                            <strong>Método:</strong> DELETE
+                                        </div>
+                                        <div>
+                                            <strong>Headers:</strong> Nenhum necessário
+                                        </div>
+                                        <div>
+                                            <strong>Body:</strong> Nenhum
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-900 mb-3 mt-8">3. Passo a Passo no Thunder Client</h3>
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <ol class="list-decimal list-inside space-y-3 text-gray-700">
+                                    <li><strong>Abrir Thunder Client:</strong> Clique no ícone do raio na barra lateral do VS Code</li>
+                                    <li><strong>Nova Requisição:</strong> Clique em "New Request"</li>
+                                    <li><strong>Configurar Método:</strong> Selecione o método HTTP (GET, POST, PUT, DELETE)</li>
+                                    <li><strong>Inserir URL:</strong> Cole a URL da API que deseja testar</li>
+                                    <li><strong>Configurar Headers:</strong> Se necessário, adicione headers na aba "Headers"</li>
+                                    <li><strong>Configurar Body:</strong> Para POST/PUT, vá na aba "Body", selecione "JSON" e cole o JSON</li>
+                                    <li><strong>Enviar:</strong> Clique em "Send" para executar a requisição</li>
+                                    <li><strong>Verificar Resposta:</strong> Analise a resposta na parte inferior da tela</li>
+                                </ol>
+                            </div>
+                            
+                            <div class="bg-orange-50 border-l-4 border-orange-400 p-6 mt-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i data-lucide="alert-triangle" class="w-5 h-5 text-orange-400"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-orange-700">
+                                            <strong>Importante:</strong> Para que os testes funcionem, você precisa implementar 
+                                            as rotas correspondentes no seu servidor Express. Os exemplos acima assumem 
+                                            que você tem rotas configuradas para todos os métodos HTTP.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </section>
