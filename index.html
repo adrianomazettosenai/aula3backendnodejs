@@ -12,6 +12,271 @@
     <!-- Prism.js para syntax highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
     
+    <style>
+        /* SISTEMA DE PROTEÇÃO CONTRA CÓPIA DE CÓDIGO */
+        /* BLOQUEIO GERAL PARA TODOS OS ELEMENTOS */
+        *, *::before, *::after, html, body, div, span, applet, object, iframe,
+        h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code,
+        del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var,
+        b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,
+        table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details,
+        embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section,
+        summary, time, mark, audio, video, main, section, article, aside, header, footer,
+        details, summary {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+            -webkit-touch-callout: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-user-drag: none !important;
+            -khtml-user-drag: none !important;
+            -moz-user-drag: none !important;
+            -o-user-drag: none !important;
+            user-drag: none !important;
+            -webkit-text-size-adjust: none !important;
+            -moz-text-size-adjust: none !important;
+            -ms-text-size-adjust: none !important;
+            text-size-adjust: none !important;
+            -webkit-user-modify: read-only !important;
+            -moz-user-modify: read-only !important;
+            user-modify: read-only !important;
+        }
+        
+        /* BLOQUEIO ULTRA-ESPECÍFICO PARA CÓDIGOS E SYNTAX HIGHLIGHTING */
+        pre, code, .code-block, .highlight, .language-javascript, .language-json, .token,
+        .hljs, .hljs-keyword, .hljs-string, .hljs-comment, .hljs-number, .hljs-literal,
+        .hljs-built_in, .hljs-name, .hljs-tag, .hljs-attr, .hljs-attribute, .hljs-variable,
+        .hljs-template-variable, .hljs-class, .hljs-function, .hljs-title, .hljs-params,
+        .hljs-doctag, .hljs-type, .hljs-meta, .hljs-meta-keyword, .hljs-meta-string,
+        .prism, .prism-code, .token-keyword, .token-string, .token-comment, .token-number,
+        .token-operator, .token-punctuation, .token-function, .token-class-name,
+        [class*="language-"], [class*="hljs-"], [class*="token-"], [class*="prism-"] {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+            -webkit-touch-callout: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-user-drag: none !important;
+            -khtml-user-drag: none !important;
+            -moz-user-drag: none !important;
+            -o-user-drag: none !important;
+            user-drag: none !important;
+            outline: none !important;
+            -webkit-user-modify: read-only !important;
+            -moz-user-modify: read-only !important;
+            user-modify: read-only !important;
+        }
+        
+        /* PERMITIR SCROLL HORIZONTAL NOS BLOCOS DE CÓDIGO */
+        pre, .code-block {
+            overflow-x: auto !important;
+            overflow-y: visible !important;
+            white-space: pre !important;
+            position: relative !important;
+            z-index: 10 !important;
+            display: block !important;
+            clear: both !important;
+        }
+        
+        /* REATIVAR APENAS NAVEGAÇÃO ESSENCIAL */
+        nav, nav *, .nav-link, button, a, input, textarea, select, .btn, .button,
+        .mark-complete, .progress-container, .navigation, .sidebar, #mark-complete-btn,
+        .progress-bar, .progress-fill, #lesson-progress-bar, #lesson-progress,
+        .breadcrumb, .breadcrumb *, .mobile-menu, .mobile-menu * {
+            pointer-events: auto !important;
+            -webkit-user-select: auto !important;
+            -moz-user-select: auto !important;
+            -ms-user-select: auto !important;
+            user-select: auto !important;
+            cursor: pointer !important;
+            -webkit-user-modify: read-write !important;
+            -moz-user-modify: read-write !important;
+            user-modify: read-write !important;
+        }
+        
+        /* ELIMINAR COMPLETAMENTE QUALQUER SELEÇÃO VISUAL */
+        ::selection {
+            background: transparent !important;
+            color: inherit !important;
+            text-shadow: none !important;
+        }
+        ::-moz-selection {
+            background: transparent !important;
+            color: inherit !important;
+            text-shadow: none !important;
+        }
+        ::-webkit-selection {
+            background: transparent !important;
+            color: inherit !important;
+            text-shadow: none !important;
+        }
+        
+        /* REMOVER QUALQUER SOBREPOSIÇÃO DE PSEUDO-ELEMENTOS */
+        pre::before, pre::after, code::before, code::after,
+        .language-javascript::before, .language-javascript::after {
+            display: none !important;
+            content: none !important;
+            position: static !important;
+        }
+        
+        /* GARANTIR QUE NENHUM ELEMENTO CUBRA O CÓDIGO */
+        pre, pre code {
+            isolation: isolate !important;
+            transform: translateZ(0) !important;
+        }
+        
+        /* Proteção simples para código */
+        pre code {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        pre {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            overflow-x: auto !important;
+            overflow-y: visible !important;
+            white-space: pre !important;
+            position: relative !important;
+            z-index: 10 !important;
+            display: block !important;
+            clear: both !important;
+        }
+        
+        /* TEMA ESCURO ULTRA CONTRASTANTE PARA BLOCOS DE CÓDIGO */
+        pre, pre code, .language-javascript, .language-json, .language-html, .language-css {
+            background-color: #1a1a1a !important;
+            color: #ffffff !important;
+            border: 2px solid #555555 !important;
+            border-radius: 8px !important;
+            padding: 20px !important;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace !important;
+            font-size: 16px !important;
+            line-height: 1.6 !important;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+            font-weight: 500 !important;
+            position: relative !important;
+            z-index: 10 !important;
+            display: block !important;
+            clear: both !important;
+            margin: 16px 0 !important;
+        }
+        
+        /* Syntax highlighting ULTRA VIBRANTE - Cores RGB com valores altos */
+        .token.comment,
+        .token.prolog,
+        .token.doctype,
+        .token.cdata {
+            color: #90EE90 !important; /* Verde claro vibrante */
+            font-style: italic !important;
+            font-weight: 500 !important;
+        }
+        
+        .token.punctuation {
+            color: #F0F0F0 !important; /* Branco quase puro */
+            font-weight: 600 !important;
+        }
+        
+        .token.property,
+        .token.tag,
+        .token.boolean,
+        .token.number,
+        .token.constant,
+        .token.symbol,
+        .token.deleted {
+            color: #00FF7F !important; /* Verde primavera brilhante */
+            font-weight: 600 !important;
+        }
+        
+        .token.selector,
+        .token.attr-name,
+        .token.string,
+        .token.char,
+        .token.builtin,
+        .token.inserted {
+            color: #FFA500 !important; /* Laranja vibrante */
+            font-weight: 600 !important;
+        }
+        
+        .token.operator,
+        .token.entity,
+        .token.url,
+        .language-css .token.string,
+        .style .token.string {
+            color: #00FFFF !important; /* Ciano brilhante */
+            font-weight: 600 !important;
+        }
+        
+        .token.atrule,
+        .token.attr-value,
+        .token.keyword {
+            color: #1E90FF !important; /* Azul dodger brilhante */
+            font-weight: bold !important;
+        }
+        
+        .token.function,
+        .token.class-name {
+            color: #FFD700 !important; /* Dourado brilhante */
+            font-weight: bold !important;
+        }
+        
+        .token.regex,
+        .token.important,
+        .token.variable {
+            color: #FF69B4 !important; /* Rosa quente vibrante */
+            font-weight: 600 !important;
+        }
+        
+        /* Código inline ULTRA CONTRASTANTE */
+        .code-inline, code:not(pre code) {
+            background-color: #333333 !important;
+            color: #FFFFFF !important;
+            padding: 4px 8px !important;
+            border-radius: 6px !important;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace !important;
+            font-size: 1em !important;
+            border: 2px solid #666666 !important;
+            font-weight: 600 !important;
+        }
+        
+        /* SOBRESCREVER QUALQUER ESTILO EXTERNO DO PRISM.JS */
+        .token, .token * {
+            text-decoration: none !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+        
+        /* GARANTIR VISIBILIDADE MÁXIMA */
+        pre[class*="language-"], code[class*="language-"] {
+            background-color: #1a1a1a !important;
+            color: #ffffff !important;
+            text-shadow: none !important;
+            border: 2px solid #555555 !important;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        /* REMOVER QUALQUER OVERLAY OU MÁSCARA */
+        pre *, code * {
+            background-image: none !important;
+            background-color: transparent !important;
+            text-decoration: none !important;
+            border-top: none !important;
+            border-bottom: none !important;
+            border-left: none !important;
+            border-right: none !important;
+        }
+    </style>
+    
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </head>
